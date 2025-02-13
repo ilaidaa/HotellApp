@@ -72,11 +72,9 @@
                             Console.WriteLine("Programmet avslutas . . .");
                             Thread.Sleep(1000);
                             runProgram = false;
-                            break;
+                        break;
 
-                        default:
-                            Console.WriteLine("Fel: Välj en siffra från menyn (1-5).");
-                            break;
+                        //  Behöver ingen default för jag säkerställde i while loopen innan switch satsen att siffran ska vara mellan 1-5
 
                     }
 
@@ -134,8 +132,50 @@
             Console.WriteLine("|\t2. Visa alla rum             |");
             Console.WriteLine("|\t3. Ändra rumsuppgifter       |");
             Console.WriteLine("|\t4. Ta bort rum               |");
+            Console.WriteLine("|\t5. Återvänd till Huvudmeny   |");
             Console.WriteLine("|\t                             |");
             Console.WriteLine("======================================");
+
+            // Ska bestämmas i while loopen när användaren ger svar men nu deklarerar jag bara så vi kan ändra värdet beroende på vad anvndaren säger
+            int choice;
+
+            // Hantera om användaren skriver fel siffra
+            while (true)
+            {
+                // Fråga om inpput
+                Console.Write("Vänligen välj ett alternativ genom att skriva in siffran för det val du önskar och tryck på Enter: ");
+
+                // Lagra input
+                string? input = Console.ReadLine();
+
+                // Hantera ? och om det är mer eller mindre än 5
+                if (int.TryParse(input, out choice) && choice <= 5 && choice >= 1)
+                {
+                    break; // Bryt loopen så du kan gå t switchen
+                }
+
+                Console.WriteLine("Fel: Välj en siffra från menyn 1 - 5.");
+            }
+
+            // Hantera kundens önskemål i submenyn beroende på vad hen vlt genom submeny
+            switch (choice)
+            {
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3: 
+                    break;
+                case 4:
+                    break;
+                case 5:
+                    Console.WriteLine("Återvänder till huvudmenyn...");
+                    Thread.Sleep(1000);
+                    return; // Bryter loopen och återvänder till huvudmenyn
+                    //  Behöver ingen default för jag säkerställde i while loopen innan switch satsen att siffran ska vara mellan 1-5
+            }
+
+            Pause();
         }
 
 
@@ -150,8 +190,51 @@
             Console.WriteLine("|\t2. Visa alla kunder          |");
             Console.WriteLine("|\t3. Ändra kunduppgifter       |");
             Console.WriteLine("|\t4. Ta bort kund              |");
+            Console.WriteLine("|\t5. Återvänd till Huvudmeny   |");
             Console.WriteLine("|\t                             |");
             Console.WriteLine("======================================");
+
+
+            // Ska bestämmas i while loopen när användaren ger svar men nu deklarerar jag bara så vi kan ändra värdet beroende på vad anvndaren säger
+            int choice;
+
+            // Hantera om användaren skriver fel siffra
+            while (true)
+            {
+                // Fråga om inpput
+                Console.Write("Vänligen välj ett alternativ genom att skriva in siffran för det val du önskar och tryck på Enter: ");
+
+                // Lagra input
+                string? input = Console.ReadLine();
+
+                // Hantera ? och om det är mer eller mindre än 5
+                if (int.TryParse(input, out choice) && choice <= 5 && choice >= 1)
+                {
+                    break; // Bryt loopen så du kan gå t switchen
+                }
+
+                Console.WriteLine("Fel: Välj en siffra från menyn 1 - 5.");
+            }
+
+            // Hantera kundens önskemål i submenyn beroende på vad hen vlt genom submeny
+            switch (choice)
+            {
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                case 4:
+                    break;
+                case 5:
+                    Console.WriteLine("Återvänder till huvudmenyn...");
+                    Thread.Sleep(1000);
+                    return; // Bryter loopen och återvänder till huvudmenyn
+                    //  Behöver ingen default för jag säkerställde i while loopen innan switch satsen att siffran ska vara mellan 1-5
+            }
+
+            Pause();
         }
 
 
@@ -166,8 +249,51 @@
             Console.WriteLine("|\t2. Visa alla bokningar       |");
             Console.WriteLine("|\t3. Ändra bokning             |");
             Console.WriteLine("|\t4. Avboka en bokning         |");
+            Console.WriteLine("|\t5. Återvänd till Huvudmeny   |");
             Console.WriteLine("|\t                             |");
             Console.WriteLine("======================================");
+
+
+            // Ska bestämmas i while loopen när användaren ger svar men nu deklarerar jag bara så vi kan ändra värdet beroende på vad anvndaren säger
+            int choice;
+
+            // Hantera om användaren skriver fel siffra
+            while (true)
+            {
+                // Fråga om inpput
+                Console.Write("Vänligen välj ett alternativ genom att skriva in siffran för det val du önskar och tryck på Enter: ");
+
+                // Lagra input
+                string? input = Console.ReadLine();
+
+                // Hantera ? och om det är mer eller mindre än 5
+                if (int.TryParse(input, out choice) && choice <= 5 && choice >= 1)
+                {
+                    break; // Bryt loopen så du kan gå t switchen
+                }
+
+                Console.WriteLine("Fel: Välj en siffra från menyn 1 - 5.");
+            }
+
+            // Hantera kundens önskemål i submenyn beroende på vad hen vlt genom submeny
+            switch (choice)
+            {
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                case 4:
+                    break;
+                case 5:
+                    Console.WriteLine("Återvänder till huvudmenyn...");
+                    Thread.Sleep(1000);
+                    return; // Bryter loopen och återvänder till huvudmenyn
+                    //  Behöver ingen default för jag säkerställde i while loopen innan switch satsen att siffran ska vara mellan 1-5
+            }
+
+            Pause();
         }
 
 
@@ -180,8 +306,47 @@
             Console.WriteLine("|\t                             |");
             Console.WriteLine("|\t1. Sök lediga rum            |");
             Console.WriteLine("|\t2. Rumsstatus                |");
+            Console.WriteLine("|\t3. Återvänd till Huvudmeny   |");
             Console.WriteLine("|\t                             |");
             Console.WriteLine("======================================");
+
+
+            // Ska bestämmas i while loopen när användaren ger svar men nu deklarerar jag bara så vi kan ändra värdet beroende på vad anvndaren säger
+            int choice;
+
+            // Hantera om användaren skriver fel siffra
+            while (true)
+            {
+                // Fråga om inpput
+                Console.Write("Vänligen välj ett alternativ genom att skriva in siffran för det val du önskar och tryck på Enter: ");
+
+                // Lagra input
+                string? input = Console.ReadLine();
+
+                // Hantera ? och om det är mer eller mindre än 5
+                if (int.TryParse(input, out choice) && choice <= 3 && choice >= 1)
+                {
+                    break; // Bryt loopen så du kan gå t switchen
+                }
+
+                Console.WriteLine("Fel: Välj en siffra från menyn 1 - 5.");
+            }
+
+            // Hantera kundens önskemål i submenyn beroende på vad hen vlt genom submeny
+            switch (choice)
+            {
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:              
+                    Console.WriteLine("Återvänder till huvudmenyn...");
+                    Thread.Sleep(1000);
+                    return; // Bryter loopen och återvänder till huvudmenyn
+                    //  Behöver ingen default för jag säkerställde i while loopen innan switch satsen att siffran ska vara mellan 1-5
+            }
+
+            Pause();
         }
 
 
