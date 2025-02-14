@@ -144,6 +144,7 @@
             Console.WriteLine("|\t5. Återvänd till Huvudmeny   |");
             Console.WriteLine("|\t                             |");
             Console.WriteLine("======================================");
+            Console.WriteLine();
 
             // Ska bestämmas i while loopen när användaren ger svar men nu deklarerar jag bara så vi kan ändra värdet beroende på vad anvndaren säger
             int choice;
@@ -177,41 +178,121 @@
                     Console.WriteLine("1. Välj enkelrum.");
                     Console.WriteLine("2. Välj dubbelrum liten (60 kvm)");
                     Console.WriteLine("3. Välj dubbelrum stor (100 kvm)");
-                    string? input = Console.ReadLine(); // Ta emot input men hantera ?
-                    while (true)
+                    string? inputRoom = Console.ReadLine(); // Ta emot input men hantera ?
+                    
+                    // går ej konvertera t int, checka om svaret är mindre än ett eller större än 3 
+                    // så om det ovan stämmer ge fel
+                    while ((!int.TryParse(inputRoom, out roomChoice) || roomChoice < 1 || roomChoice > 3))
                     {
-                        if(int.TryParse(input, out roomChoice) && roomChoice <= 3 && roomChoice >= 1)
-                        {
-                            break; // gå ut ur while loopen och fortsätt i koden
-                        }
-                        Console.WriteLine("Fel: Välj en siffra i menyn 1 - 2."); // Tvinga användaren i loopen tills hen gör rätt.
+                            Console.WriteLine("FEL: Välj en siffra i menyn 1 – 3."); 
+                            inputRoom = Console.ReadLine(); // Låt användaren ge nytt värde utan att ställa frågan igen.
+                        
                     }
+
+                    //Om han lyckats skriva rätt kommer det som händer i varje rums alternativ t.ex dubbelrum liten en säng osv
                     switch (roomChoice)
                     {
                         case 1:
-                            Console.WriteLine($"Du har bokat enkelrum: //skriv rumsnamn här//");
+                            Console.WriteLine($"Du har bokat enkelrum: //skriv rumsnamn här fortsätt koda//");
                             break;
+                        
                         case 2:
                             Console.Write("Du har valt dubbelrum liten (60 kvm). Vill du lägga till en extrasäng? (JA/NEJ): ");
-                            string? answer = Console.ReadLine();
-                            if (string.IsNullOrWhiteSpace(answer))
+                            string? singleRoomAnswer;
+
+                            while (true)
                             {
-                                Console.WriteLine("Fel: skriv in en JA eller NEJ.");
-                            }
-                            else
-                            {
-                                if (answer.ToLower() == "ja")
+                                singleRoomAnswer = Console.ReadLine().Trim().ToLower(); // Tar bort mellanslag och omvandlar till små bokstäver
+
+                                if (string.IsNullOrWhiteSpace(singleRoomAnswer)) // Hantera vad som händer om ? och isnullorWhiteSpace sker
                                 {
-                                    Console.WriteLine("BOKAT! Du har bokat dubbelrum liten (60 kvm) och lagt till en extrasäng.");
+                                    Console.WriteLine("FEL: skriv in en JA eller NEJ.");
+                                    continue; // Gör så att man forstätter fråga frågan för den går tillbaka till while
+                                              // continue; hoppar över resten av iterationen och startar om loopen från början.
+                                              // break; avslutar loopen helt.
                                 }
-                                else if(answer.ToLower() == "nej")
+
+                                switch (singleRoomAnswer)
                                 {
-                                    Console.WriteLine("BOKAT! Du har bokat dubbelrum liten (60 kvm) utan en extrasäng.");
+                                    case "ja":
+                                        Console.WriteLine();
+                                        Console.WriteLine("BOKAT! Du har bokat dubbelrum liten (60 kvm) och lagt till en extrasäng.");
+                                        break;
+                                    case "nej":
+                                        Console.WriteLine();
+                                        Console.WriteLine("BOKAT! Du har bokat dubbelrum liten (60 kvm) utan en extrasäng.");
+                                        break;
+                                    default:
+                                        Console.WriteLine();
+                                        Console.Write("FEL: skriv in JA eller NEJ: ");
+                                        continue; // Fråga igen om svaret är ogiltigt
                                 }
+                                break; // Avsluta while loopen om vi fått ett giltigt svar
                             }
-                            break;
+                            break; // Avsluta case:et
+                        
                         case 3:
-                            break;
+
+                            Console.Write("Du har valt dubbelrum stor (100 kvm). Vill du lägga till extrasängar? (JA/NEJ): ");
+                            string? doubleRoomAnswer;
+
+                            while (true)
+                            {
+                                doubleRoomAnswer = Console.ReadLine().Trim().ToLower();
+
+                                if (string.IsNullOrWhiteSpace(doubleRoomAnswer))
+                                {
+                                    Console.WriteLine();
+                                    Console.WriteLine("FEL: skriv in en JA eller NEJ.");
+                                    continue;
+                                }
+
+                                switch (doubleRoomAnswer)
+                                {
+                                    case "ja":
+                                        Console.Write("Du kan max boka 2 sängar. Skriv in antal sängar ( 1/2 ): ");
+                                        string? inputBed;
+
+                                        // Hantera bokningar av sängar
+                                        while (true)
+                                        {
+                                            inputBed = Console.ReadLine(); // När personen failar med inmatning ska de få en ny chans att mata in I SJÄLVA WHILE loopen 
+
+                                            if(int.TryParse(inputBed, out int bed) && (bed == 1 || bed == 2)) // Hantera ?, hantera att de mellan 1-2
+                                            {
+                                                switch (bed)
+                                                {
+                                                    case 1:
+                                                        Console.WriteLine();
+                                                        Console.WriteLine("BOKAT! Du har bokat dubbelrum stor (100 kvm) med 1 extrasäng.");
+                                                        break;
+                                                    case 2:
+                                                        Console.WriteLine();
+                                                        Console.WriteLine("BOKAT! Du har bokat dubbelrum stor (100 kvm) med 2 extrasängar.");
+                                                        break;
+                                                }
+                                                break; // Avslutar while-loopen efter giltig inmatning!!!!! tog 70 h att hitta felet KUL :)
+                                            }
+                                            else
+                                            {
+                                                Console.WriteLine();
+                                                Console.WriteLine("FEL: Skriv in 1 eller 2.");
+                                            }
+                                        }
+                                        break;
+
+                                    case "nej":
+                                        Console.WriteLine();
+                                        Console.WriteLine("BOKAT! Du har bokat dubbelrum stor (100 kvm) utan extrasängar."); ;
+                                        break;
+                                    default:
+                                        Console.WriteLine();
+                                        Console.WriteLine("FEL: skriv in JA eller NEJ: ");
+                                        continue; // Fråga igen om svaret är ogiltig
+                                }
+                                break; // Avsluta while loopen
+                            }
+                            break; // Avsluta case:et
                     }
 
 
@@ -229,7 +310,7 @@
                     //  Behöver ingen default för jag säkerställde i while loopen innan switch satsen att siffran ska vara mellan 1-5
             }
 
-            Pause();
+           
         }
 
 
@@ -288,7 +369,7 @@
                     //  Behöver ingen default för jag säkerställde i while loopen innan switch satsen att siffran ska vara mellan 1-5
             }
 
-            Pause();
+          
         }
 
 
@@ -347,7 +428,6 @@
                     //  Behöver ingen default för jag säkerställde i while loopen innan switch satsen att siffran ska vara mellan 1-5
             }
 
-            Pause();
         }
 
 
@@ -400,7 +480,7 @@
                     //  Behöver ingen default för jag säkerställde i while loopen innan switch satsen att siffran ska vara mellan 1-5
             }
 
-            Pause();
+           
         }
 
 
