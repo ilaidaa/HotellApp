@@ -37,7 +37,6 @@
 
 
 
-
                    // Hantera subval
                     switch (choice)
                     {
@@ -78,15 +77,25 @@
 
                     }
 
-
                 Pause();
-
 
             }
 
 
 
         }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -161,6 +170,51 @@
             switch (choice)
             {
                 case 1:
+
+                    // Enkel rum eller dubbelrum
+                    int roomChoice; // För att kunna hantera while loopen där enkel eller dubbel rum bestäms.
+                    Console.WriteLine();
+                    Console.WriteLine("1. Välj enkelrum.");
+                    Console.WriteLine("2. Välj dubbelrum liten (60 kvm)");
+                    Console.WriteLine("3. Välj dubbelrum stor (100 kvm)");
+                    string? input = Console.ReadLine(); // Ta emot input men hantera ?
+                    while (true)
+                    {
+                        if(int.TryParse(input, out roomChoice) && roomChoice <= 3 && roomChoice >= 1)
+                        {
+                            break; // gå ut ur while loopen och fortsätt i koden
+                        }
+                        Console.WriteLine("Fel: Välj en siffra i menyn 1 - 2."); // Tvinga användaren i loopen tills hen gör rätt.
+                    }
+                    switch (roomChoice)
+                    {
+                        case 1:
+                            Console.WriteLine($"Du har bokat enkelrum: //skriv rumsnamn här//");
+                            break;
+                        case 2:
+                            Console.Write("Du har valt dubbelrum liten (60 kvm). Vill du lägga till en extrasäng? (JA/NEJ): ");
+                            string? answer = Console.ReadLine();
+                            if (string.IsNullOrWhiteSpace(answer))
+                            {
+                                Console.WriteLine("Fel: skriv in en JA eller NEJ.");
+                            }
+                            else
+                            {
+                                if (answer.ToLower() == "ja")
+                                {
+                                    Console.WriteLine("BOKAT! Du har bokat dubbelrum liten (60 kvm) och lagt till en extrasäng.");
+                                }
+                                else if(answer.ToLower() == "nej")
+                                {
+                                    Console.WriteLine("BOKAT! Du har bokat dubbelrum liten (60 kvm) utan en extrasäng.");
+                                }
+                            }
+                            break;
+                        case 3:
+                            break;
+                    }
+
+
                     break;
                 case 2:
                     break;
