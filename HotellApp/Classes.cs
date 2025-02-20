@@ -138,7 +138,7 @@ namespace HotellApp
         // Metod: Lägg till nytt rum
         public void AddRoom(Room room) // Lägger till ett rum från Room klassen för att metoden ska funka
         {
-            Rooms.Add(room); // Rooms är listen som bestämdes i HotelManager klassens properties
+            Rooms.Add(room); // Rooms är listen som bestämdes i HotelManager klassens properties. room är objekt från klassen Room
             Console.WriteLine($"Rum {room.RoomName} har lagts till.");
         }
 
