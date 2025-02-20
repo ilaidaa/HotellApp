@@ -47,7 +47,7 @@ namespace HotellApp
                         case 1:
 
                             // Visa Submeny 1
-                            ShowRoomMenu();
+                            ShowRoomMenu(hotelManager);
 
                             break;
 
@@ -115,6 +115,8 @@ namespace HotellApp
 
 
 
+
+
         // METODER
 
         // Huvudmeny
@@ -132,6 +134,10 @@ namespace HotellApp
             Console.WriteLine("======================================");
             Console.WriteLine();
         }
+
+
+
+
 
 
 
@@ -273,6 +279,10 @@ namespace HotellApp
 
 
 
+
+
+
+
         // Kund Meny
         static void ShowCustomerMenu()
         {
@@ -332,6 +342,10 @@ namespace HotellApp
 
 
 
+
+
+
+
         // Boknings Meny
         static void ShowBookingMenu()
         {
@@ -387,6 +401,10 @@ namespace HotellApp
             }
 
         }
+
+
+
+
 
 
 
