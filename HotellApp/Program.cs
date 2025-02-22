@@ -1,4 +1,6 @@
-﻿using System.Runtime.Intrinsics.Arm;
+﻿using System.Diagnostics;
+using System;
+using System.Runtime.Intrinsics.Arm;
 
 namespace HotellApp
 {
@@ -34,7 +36,7 @@ namespace HotellApp
                         break; // Giltigt val så loop ska stanna
                     }
 
-                    Console.WriteLine("Fel: Välj en siffra från menyn 1 - 5.");
+                    Console.WriteLine("Vänligen välj en siffra från menyn 1 - 5.");
                     
                 }
 
@@ -174,7 +176,7 @@ namespace HotellApp
                     break; // Bryt loopen så du kan gå t switchen
                 }
 
-                Console.WriteLine("Fel: Välj en siffra från menyn 1 - 5.");
+                Console.WriteLine("Vänligen välj en siffra från menyn 1 - 5.");
             }
 
             // Hantera kundens önskemål i submenyn beroende på vad hen vlt genom submeny
@@ -198,7 +200,7 @@ namespace HotellApp
                     // Lyckas inte komma ur while loopen om inputRoom inte går att konvertera till roomChoice, eller RoomChoice är mindre än 1, eller roomChoice är stöörre än 3
                     while (!int.TryParse(inputRoom, out roomChoice) || roomChoice < 1 || roomChoice > 3)
                     {
-                        Console.WriteLine("FEL: Välj en siffra i menyn 1 – 3."); // Ingen return behövs för loopen körs SÅ LÄNGE fel inmatning sker.
+                        Console.WriteLine("Vänligen välj en siffra i menyn 1 – 3."); // Ingen return behövs för loopen körs SÅ LÄNGE fel inmatning sker.
                                                                                  // Om inte så går man ner till nästa rad
                         inputRoom = Console.ReadLine(); // gör att användaren får en ny chans att skriva in rätt input.
                     }
@@ -234,7 +236,7 @@ namespace HotellApp
                         // Om det inte går att konverter, eller extrabeds är mindre än 0 eller extraBeds är mer än maxBeds ge felmeddelande
                         while (!int.TryParse(bedCount, out extraBeds) || extraBeds < 0 || extraBeds > maxExtraBeds)
                         {
-                            Console.WriteLine($"FEL: Ange ett nummer mellan 0 och {maxExtraBeds}.");
+                            Console.WriteLine($"Vänligen ange ett nummer mellan 0 och {maxExtraBeds}.");
                             bedCount = Console.ReadLine(); // användaren ska få en ny chans att mata in rätt värde.
                         }
                     }
@@ -257,13 +259,54 @@ namespace HotellApp
                     hotelManager.AddRoom(newRoom);
 
                     // Ge meddelande till user om att bokningen är klar
-                    Console.WriteLine($"Rum {roomName} BOKAT! Du har skapat {roomType} med {extraBeds} extrasäng(ar).");
+                    Console.WriteLine($"Rum {roomName} Bokat! Du har skapat {roomType} med {extraBeds} extrasäng(ar).");
                     break;
 
 
                 case 2:
                     break;
-                case 3: 
+
+                case 3:
+
+                    Console.Write("Vänligen ange rumsnumret för det rum du vill ändra: ");
+
+                    // Ta emot användarens svar i string 
+                    string? input = Console.ReadLine();
+
+
+                    // Konvertera och hantera ? från    -->    "string? input = Console.ReadLine();"
+                    int roomNumber; // behöver deklareras utanför while-loopen för att den ska vara tillgänglig efter att loopen är klar       
+                    while (!int.TryParse(input, out roomNumber)) // Hade jag inte deklarerat roomNumber över while loopen hade jag varit tvungen att lägga "int" framför out
+                    {
+                        Console.WriteLine("Vänligen skriv in ett giltigt nummer: ");
+                        input = Console.ReadLine(); // denna rad så användaren kan fortsätta skriva in svar tills han ger ett korrekt svar
+                    }
+
+
+                    // Kolla om rummet ens finns i hotelManager.Rooms
+                    var roomToEdit = hotelManager.Rooms.Find(r => r.RoomName == input); // var är en room objekt från Room klassen
+
+                    // Hanter om find inte hittar rummet
+                    if (roomToEdit != null)
+                    {
+                        Console.WriteLine($"Du har valt att ändra {roomToEdit.RoomName}");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Rummet kunde inte hittas.");
+                    }
+
+
+                    // Låt användaren välja det som ska ändras i rummet
+                    Console.WriteLine("1. Rumsnamn");
+                    Console.WriteLine("2. Rumstyp (enkelrum/dubbelrum)");
+                    Console.WriteLine("3. Extrasängar");
+                    Console.WriteLine();
+                    Console.Write("Vänligen välj ett alternativ genom att skriva in siffran för det val du önskar och tryck på Enter: ");
+
+                    // Ta emot användarens input 
+
+
                     break;
                 case 4:
                     break;
@@ -316,7 +359,7 @@ namespace HotellApp
                     break; // Bryt loopen så du kan gå t switchen
                 }
 
-                Console.WriteLine("Fel: Välj en siffra från menyn 1 - 5.");
+                Console.WriteLine("Vänligen välj en siffra från menyn 1 - 5.");
             }
 
             // Hantera kundens önskemål i submenyn beroende på vad hen vlt genom submeny
@@ -379,7 +422,7 @@ namespace HotellApp
                     break; // Bryt loopen så du kan gå t switchen
                 }
 
-                Console.WriteLine("Fel: Välj en siffra från menyn 1 - 5.");
+                Console.WriteLine("Vänligen välj en siffra från menyn 1 - 5.");
             }
 
             // Hantera kundens önskemål i submenyn beroende på vad hen vlt genom submeny
@@ -439,7 +482,7 @@ namespace HotellApp
                     break; // Bryt loopen så du kan gå t switchen
                 }
 
-                Console.WriteLine("Fel: Välj en siffra från menyn 1 - 5.");
+                Console.WriteLine("Vänligen välj en siffra från menyn 1 - 5.");
             }
 
             // Hantera kundens önskemål i submenyn beroende på vad hen vlt genom submeny
