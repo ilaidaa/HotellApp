@@ -305,6 +305,95 @@ namespace HotellApp
                     Console.Write("Vänligen välj ett alternativ genom att skriva in siffran för det val du önskar och tryck på Enter: ");
 
                     // Ta emot användarens input 
+                    string? inputString = Console.ReadLine();
+
+                    // Deklarera variabeln som ska skapas när inputString konverteras. dvs variabeln i while loopen nedan
+                    int userChoice;
+
+                    // Konvertera, hantera ?, låt användaren testa skriva tills hen skriver rätt
+                    while(!int.TryParse(inputString, out userChoice) || userChoice > 4 || userChoice < 1)
+                    {
+                        Console.WriteLine("Vänligen ange ett nummer mellan 1 - 3");
+                        inputString = Console.ReadLine();
+                    }
+
+                    // Hantera alla alternativ med en switch sats
+                    switch (userChoice)
+                    {
+                        case 1:
+                            Console.Write($"Ditt nuvarande rumsnamn är: {roomToEdit.RoomName}. Skriv det rumsnamn du vill byta till : ");
+
+                            // Ta emot input
+                            string? newRoomName = Console.ReadLine();
+
+                            // Hantera null ( ? )
+                            while (string.IsNullOrWhiteSpace(newRoomName))
+                            {
+                                Console.WriteLine("Vänligen skriv in ett giltigt rumsnamn");
+                                newRoomName = Console.ReadLine(); // Ge flera chanser till användaren skriver utan null eller tom sträng
+                            }
+
+                            // Kolla om rumsnamnet redan är upptaget om så fallet låt användaren ge nya namn tills han lyckas
+                            while(hotelManager.Rooms.Any(r => r.RoomName == newRoomName))
+                            {
+                                Console.WriteLine($"Det finns redan ett rum som heter {newRoomName}. Vänligen välj ett nytt namn: ");
+                                newRoomName = Console.ReadLine(); // Låt användaren skriva in ett nytt namn
+                            }
+
+                            // Den letar igenom listan av rum i hotelManager.Rooms och hittar det första rummet där rumsnamnet är detsamma som roomToEdit´s roomName.
+                            var room = hotelManager.Rooms.First(r => r.RoomName == roomToEdit.RoomName); // First :  returnerar det första elementet som uppfyller ett givet villkor (här, att rumsnamnet matchar).
+                                                                                                // Det används när man förväntar sig att hitta minst ett matchande objekt och vill ha just det första som hittas.
+
+                            // Uppdatera rumsnamnet i room objektet till newRoomName
+                            room.RoomName = newRoomName;
+
+                            // Meddela användaren om bytet
+                            Console.WriteLine($"Rumsnamnet ändrades till {newRoomName}");
+                            break;
+
+                        case 2:
+                            Console.Write($"Ditt nuvarande rumstyp är: {roomToEdit.RoomType}. Ange den nya rumstypen (t.ex. enkelrum eller dubbelrum): ");
+
+                            // Ta emot input
+                            string? newRoomType = Console.ReadLine();
+
+                            // Hantera ?, alltås om newRoomType är null lr mellanslag
+                            while (string.IsNullOrWhiteSpace(newRoomType))
+                            {
+                                Console.WriteLine("Vänligen ange en giltig rumstyp.");
+                                newRoomType = Console.ReadLine();
+                            }
+
+                            // Uppdatera roomToEdits RoomType till användarens nya önskemål som är newRoomType
+                            roomToEdit.RoomType = newRoomType;
+
+                            // Meddela användaren
+                            Console.WriteLine($"Rumstypen har ändrats till {newRoomType}.");
+                            break;
+
+                        case 3:
+                            Console.Write($"Ditt nuvarande val av extrasängar är: {roomToEdit.ExtraBeds}. Ange det nya antalet extrasängar: ");
+
+                            // ta emot input
+                            string? extraBedsinput = Console.ReadLine();
+
+                            // denna variabel är den som kommer att uppdateras efter konverteringen i while
+                            int newExtraBeds;
+
+                            // Konvertera och hantera ?
+                            while(!int.TryParse(extraBedsinput, out newExtraBeds) || newExtraBeds < 1 || newExtraBeds > 2)
+                            {
+                                Console.WriteLine("Vänligen ange ett giltigt nummer mellan 1 och 2:");
+                                extraBedsinput = Console.ReadLine();
+                            }
+
+                            // Updatera roomToEdits ExtraBeds property med den nya newExtraBeds
+                            roomToEdit.ExtraBeds = newExtraBeds;
+
+                            // Meddela användaren om detta
+                            Console.WriteLine($"Antalet extrasängar har uppdaterats till {newExtraBeds}.");                       
+                            break;
+                    }
 
 
                     break;
