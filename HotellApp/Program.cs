@@ -150,10 +150,9 @@ namespace HotellApp
             Console.WriteLine("======================================");
             Console.WriteLine("|\t                             |");
             Console.WriteLine("|\t1. Lägg till nytt rum        |");
-            Console.WriteLine("|\t2. Visa alla rum             |");
-            Console.WriteLine("|\t3. Ändra rumsuppgifter       |");
-            Console.WriteLine("|\t4. Ta bort rum               |");
-            Console.WriteLine("|\t5. Återvänd till Huvudmeny   |");
+            Console.WriteLine("|\t2. Ändra rumsuppgifter       |");
+            Console.WriteLine("|\t3. Ta bort rum               |");
+            Console.WriteLine("|\t4. Återvänd till Huvudmeny   |");
             Console.WriteLine("|\t                             |");
             Console.WriteLine("======================================");
             Console.WriteLine();
@@ -263,12 +262,9 @@ namespace HotellApp
                     break;
 
 
+
                 case 2:
-                    break;
-
-                case 3:
-
-                    Console.Write("Vänligen ange rumsnumret för det rum du vill ändra: ");
+                    Console.Write("Vänligen ange rumsnamnet för det rum du vill ändra (Ex: Rum 101): ");
 
                     // Ta emot användarens svar i string 
                     string? input = Console.ReadLine();
@@ -298,8 +294,8 @@ namespace HotellApp
 
 
                     // Låt användaren välja det som ska ändras i rummet
-                    Console.WriteLine("1. Rumsnamn");
-                    Console.WriteLine("2. Rumstyp (enkelrum/dubbelrum)");
+                    Console.WriteLine("1. Rumsnamn (Ex: Rum 101)");
+                    Console.WriteLine("2. Rumstyp (Ex: enkelrum/dubbelrum)");
                     Console.WriteLine("3. Extrasängar");
                     Console.WriteLine();
                     Console.Write("Vänligen välj ett alternativ genom att skriva in siffran för det val du önskar och tryck på Enter: ");
@@ -341,11 +337,11 @@ namespace HotellApp
                             }
 
                             // Den letar igenom listan av rum i hotelManager.Rooms och hittar det första rummet där rumsnamnet är detsamma som roomToEdit´s roomName.
-                            var room = hotelManager.Rooms.First(r => r.RoomName == roomToEdit.RoomName); // First :  returnerar det första elementet som uppfyller ett givet villkor (här, att rumsnamnet matchar).
+                            var rooom = hotelManager.Rooms.First(r => r.RoomName == roomToEdit.RoomName); // First :  returnerar det första elementet som uppfyller ett givet villkor (här, att rumsnamnet matchar).
                                                                                                 // Det används när man förväntar sig att hitta minst ett matchande objekt och vill ha just det första som hittas.
 
                             // Uppdatera rumsnamnet i room objektet till newRoomName
-                            room.RoomName = newRoomName;
+                            rooom.RoomName = newRoomName;
 
                             // Meddela användaren om bytet
                             Console.WriteLine($"Rumsnamnet ändrades till {newRoomName}");
@@ -394,16 +390,45 @@ namespace HotellApp
                             Console.WriteLine($"Antalet extrasängar har uppdaterats till {newExtraBeds}.");                       
                             break;
                     }
-
-
+                   
                     break;
+
+
+                case 3:
+                    Console.Write("Vänligen ange rumsnumret för det rum du vill ta bort (Ex: Rum 101): ");
+
+                    // Ta emot input
+                    string? roomGettingDeleted = Console.ReadLine();
+
+                    // Hantera ? (null) som du lova i raden ovan
+                    while (string.IsNullOrWhiteSpace(roomGettingDeleted))
+                    {
+                        Console.WriteLine("Vänligen skriv in ett giltigt nummer (Ex: Rum 101): ");
+                        roomGettingDeleted = Console.ReadLine();
+                    }
+
+                    // Kolla om rumsnamnet ens finns om inte ge användaren nya chanser tills han lyckas
+                    while(!hotelManager.Rooms.Any(r => r.RoomName == roomGettingDeleted))
+                    {
+                        Console.WriteLine("Rummet du vill ta bort kunde inte hittas. Vänligen skriv in ett giltigt rumsnamn: ");
+                        roomGettingDeleted = Console.ReadLine();
+                    }
+
+                    // Döp rummet (till room) som hittades och som användaren sökte så att du kan i nästa steg deleta
+                    var room = hotelManager.Rooms.Find(r => r.RoomName == roomGettingDeleted); // First :  returnerar det första elementet som uppfyller ett givet villkor (här, att rumsnamnet matchar).
+                                                                                               // Det används när man förväntar sig att hitta minst ett matchande objekt och vill ha just det första som hittas.
+                    // Ta bort rummet
+                    hotelManager.Rooms.Remove(room);
+
+                    // Meddela användaren
+                    Console.WriteLine($"Rummet {roomGettingDeleted} har tagits bort. ");
+                    
+                    break;
+
+
                 case 4:
+                    ReturnToMainMenu();
                     break;
-                case 5:
-                    Console.WriteLine("Återvänder till huvudmenyn...");
-                    Thread.Sleep(1000);
-                    return; // Bryter loopen och återvänder till huvudmenyn
-                    //  Behöver ingen default för jag säkerställde i while loopen innan switch satsen att siffran ska vara mellan 1-5
             }
 
            
@@ -463,10 +488,8 @@ namespace HotellApp
                 case 4:
                     break;
                 case 5:
-                    Console.WriteLine("Återvänder till huvudmenyn...");
-                    Thread.Sleep(1000);
-                    return; // Bryter loopen och återvänder till huvudmenyn
-                    //  Behöver ingen default för jag säkerställde i while loopen innan switch satsen att siffran ska vara mellan 1-5
+                    ReturnToMainMenu();
+                    break;
             }
 
           
@@ -526,10 +549,8 @@ namespace HotellApp
                 case 4:
                     break;
                 case 5:
-                    Console.WriteLine("Återvänder till huvudmenyn...");
-                    Thread.Sleep(1000);
-                    return; // Bryter loopen och återvänder till huvudmenyn
-                    //  Behöver ingen default för jag säkerställde i while loopen innan switch satsen att siffran ska vara mellan 1-5
+                    ReturnToMainMenu();
+                    break;
             }
 
         }
@@ -593,11 +614,34 @@ namespace HotellApp
         }
 
 
+
+
+
+        // Paus metod
         static void Pause()
         {
             Console.WriteLine("\nTryck på valfri tangent för att fortsätta...");
             Console.ReadKey();
         }
+
+
+
+
+
+
+
+
+
+
+        // Metod som finns i alla switch satsers sista case så man kan återvända till huvudmenyn
+        static void ReturnToMainMenu()
+        {
+            Console.WriteLine("Återvänder till huvudmenyn...");
+            Thread.Sleep(1000);
+            return; // Bryter loopen och återvänder till huvudmenyn
+                    //  Behöver ingen default för jag säkerställde i while loopen innan switch satsen att siffran ska vara mellan 1-5
+        }
+
 
     }
 }
