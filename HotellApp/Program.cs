@@ -53,7 +53,7 @@ namespace HotellApp
 
                         case 2:
                             // Visa Submeny 2
-                            ShowCustomerMenu();
+                            ShowCustomerMenu(hotelManager);
 
                             break;
 
@@ -226,7 +226,100 @@ namespace HotellApp
                     //Skriv meddelande till användaren om att kunden lagts till
                     Console.WriteLine($"Ny kund {newCustomerName} har lagts till. ");
                     break;
+
+
                 case 2:
+                    Console.Write("Vänligen ange kundnamnet för den kund du vill ändra uppgifter på (Ex: Ali Chuba): ");
+
+                    string? customerToEditName = Console.ReadLine();
+
+                    // Hantera ? och kolla om kunden ens finns i Cutomer listan i hotelmanager klassen
+                    while(string.IsNullOrWhiteSpace(customerToEditName) || !hotelManager.Customers.Any(c => c.Name == customerToEditName))
+                    {
+                        Console.WriteLine();
+                        Console.Write("Ogiltigt namn / Kunden existerar inte. Vänligen skriv in ett giltigt namn eller en kund som existerar (Ex: Ali Chuba): ");
+                        customerToEditName = Console.ReadLine();
+                    }
+
+                    // Hämta det faktiska Customer-objektet
+                    // för customerToEditName är bara namnet i STRING som användaren vill ändra
+                    var customerToEdit = hotelManager.Customers.First(c => c.Name == customerToEditName); // First hittar första matchande värde
+
+
+                    // Ge alternativ på det som användaren kan ändra hos kunden
+                    Console.WriteLine();
+                    Console.WriteLine("1. Kundnamn (Ex: Ali Chuba) ");
+                    Console.WriteLine("2. Kundmail (Ex: Ali@hotmail.com) ");
+                    Console.WriteLine("3. Kundnummer (Ex: 0764556227) ");
+                    Console.WriteLine();
+                    Console.WriteLine();
+                    Console.Write("Vänligen välj ett alternativ genom att skriva in siffran för det val du önskar och tryck på Enter: ");
+
+                    // Ta emot användarens input men den är i string
+                    string? inputChoice = Console.ReadLine();
+
+                    // Skapa en int variabel som kan behålla värdet av inputChoice och som du ska konvertera till
+                    int userChoice;
+
+                    // Hantera ? och konvertering och max siffror i menyn vilket är 1-3
+                    while(!int.TryParse(inputChoice.ToLower(), out userChoice) || userChoice < 1 || userChoice > 3) // ToLower gör så att alla bokstäver skriv in i små bokstäver även om användaren råkar skriva i caps lock
+                    {
+                        Console.WriteLine();
+                        Console.Write("Vänligen skriv in ett giltigt svar mellan 1 - 3: ");
+                        inputChoice = Console.ReadLine();
+                    }
+
+                    //Gör en switch sats som hanterar alla saker man kan ändra
+                    switch (userChoice)
+                    {
+                        case 1:
+                            Console.WriteLine();
+                            Console.Write($"Nuvarande kundnamn är {customerToEdit.Name}. Skriv in det namn du vill ändra till: ");
+
+                            string? changedCustomerName = Console.ReadLine();
+
+                            // Hantera ? och att namnet som väljs inte finns i hotelManagers Customer lista
+                            while (string.IsNullOrWhiteSpace(changedCustomerName) || hotelManager.Customers.Any(n => n.Name == changedCustomerName))
+                            {
+                                Console.WriteLine();
+                                Console.Write("Vänligen skriv in ett giltigt namn eller ett namn som inte redan finns i listan (Ex: Maja Karlsson): ");
+                                changedCustomerName = Console.ReadLine();
+                            }
+
+                            // Spara nya namnet
+                            customerToEdit.Name = changedCustomerName;
+
+                            // Meddela användaren om ändringen i kundens namn
+                            Console.WriteLine($"Kundens namn har uppdaterats till {changedCustomerName}.");
+                            break;
+
+
+                        case 2:
+                            Console.WriteLine();
+                            Console.Write($"Nuvarande kundmail är {customerToEdit.Email}. Skriv in det namn du vill ändra till: ");
+
+                            string? changedCustomerEmail = Console.ReadLine();
+
+                            // Hantera ? men i denna case jämfört med första, behöver du inte se till att mejlen finns i Custoemrs listan för du har redan checkat namnet
+                            while (string.IsNullOrWhiteSpace(changedCustomerEmail))
+                            {
+                                Console.WriteLine();
+                                Console.Write("Vänligen skriv in en giltigt email (Ex: MajaKarlsson@hotmail.com): ");
+                                changedCustomerName = Console.ReadLine();
+                            }
+
+                            // Spara nya email adressen
+                            customerToEdit.Email = changedCustomerEmail;
+
+                            // Meddela användaren om ändringen i kundens namn
+                            Console.WriteLine($"Kundens email har uppdateras till {changedCustomerEmail}");
+                            break;
+
+
+                        case 3: 
+                            break;
+                    }
+
                     break;
                 case 3:
                     break;
