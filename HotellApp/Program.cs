@@ -447,10 +447,9 @@ namespace HotellApp
             Console.WriteLine("======================================");
             Console.WriteLine("|\t                             |");
             Console.WriteLine("|\t1. Lägg till ny kund         |");
-            Console.WriteLine("|\t2. Visa alla kunder          |");
-            Console.WriteLine("|\t3. Ändra kunduppgifter       |");
-            Console.WriteLine("|\t4. Ta bort kund              |");
-            Console.WriteLine("|\t5. Återvänd till Huvudmeny   |");
+            Console.WriteLine("|\t2. Ändra kunduppgifter       |");
+            Console.WriteLine("|\t3. Ta bort kund              |");
+            Console.WriteLine("|\t4. Återvänd till Huvudmeny   |");
             Console.WriteLine("|\t                             |");
             Console.WriteLine("======================================");
 
@@ -486,8 +485,6 @@ namespace HotellApp
                 case 3:
                     break;
                 case 4:
-                    break;
-                case 5:
                     ReturnToMainMenu();
                     break;
             }
@@ -508,7 +505,6 @@ namespace HotellApp
             Console.WriteLine("======================================");
             Console.WriteLine("|\t                             |");
             Console.WriteLine("|\t1. Skapa ny bokning          |");
-            Console.WriteLine("|\t2. Visa alla bokningar       |");
             Console.WriteLine("|\t3. Ändra bokning             |");
             Console.WriteLine("|\t4. Avboka en bokning         |");
             Console.WriteLine("|\t5. Återvänd till Huvudmeny   |");
@@ -547,8 +543,6 @@ namespace HotellApp
                 case 3:
                     break;
                 case 4:
-                    break;
-                case 5:
                     ReturnToMainMenu();
                     break;
             }
