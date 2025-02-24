@@ -124,7 +124,7 @@ namespace HotellApp
 
 
         // Kund Meny
-        static void ShowCustomerMenu()
+        static void ShowCustomerMenu(HotelManager hotelManager)
         {
             Console.Clear();
             Console.WriteLine("======================================");
@@ -148,6 +148,7 @@ namespace HotellApp
 
                 // Lagra input
                 string? input = Console.ReadLine();
+                Console.WriteLine();
 
                 // Hantera ? och om det är mer eller mindre än 5
                 if (int.TryParse(input, out choice) && choice <= 5 && choice >= 1)
@@ -155,13 +156,75 @@ namespace HotellApp
                     break; // Bryt loopen så du kan gå t switchen
                 }
 
-                Console.WriteLine("Vänligen välj en siffra från menyn 1 - 5.");
+                Console.WriteLine("Vänligen välj en siffra från menyn 1 - 4.");
             }
 
             // Hantera kundens önskemål i submenyn beroende på vad hen vlt genom submeny
             switch (choice)
             {
                 case 1:
+                    Console.WriteLine();
+
+                    // Ta emot nya kundens namn
+                    Console.Write("Ange kundens namn (Ex: Anna Lindborg) : ");
+
+                    string? newCustomerName = Console.ReadLine();
+                    Console.WriteLine();
+
+                    // Hantera ? och samtidigt kolla om namn redan finns i hotelManager klasens Customers lista och om så fallet be användren byta namn
+                    while (string.IsNullOrWhiteSpace(newCustomerName) || hotelManager.Customers.Any(c => c.Name == newCustomerName))
+                    {
+                        Console.WriteLine();
+                        Console.Write("Du skrev ett ogiltigt namn / Kunden är redan registrerad. Vänligen skriv in en ny kund / giltigt namn (Ex: Anna Lindborg): ");
+                        newCustomerName = Console.ReadLine();
+                    }
+
+               
+
+                    // Ta emot nya kundens epost             
+                    Console.Write("Ange kundens epost (Ex: AnnaLindborg@hotmail.com): ");
+
+                    string? newCustomerMail = Console.ReadLine();
+                    Console.WriteLine();
+
+                    // Hantera ?
+                    while (string.IsNullOrWhiteSpace(newCustomerMail))
+                    {
+                        Console.WriteLine();
+                        Console.Write("Vänligen ange en giltig e-postadress (Ex: AnnaLindborg@hotmail.com): ");
+                        newCustomerMail = Console.ReadLine();
+                    }
+
+
+                    // Ta emot nya kundens mobil nr             
+                    Console.Write("Ange kundens telefonnummer (Ex: 0764556227): ");
+
+                    string? newCustomerNumber = Console.ReadLine();
+                    Console.WriteLine();
+
+                    // Hantera ?
+                    while (string.IsNullOrWhiteSpace(newCustomerNumber))
+                    {
+                        Console.WriteLine();
+                        Console.Write("Vänligen ange en giltig telefonnummer (Ex: 0764556227): ");
+                        newCustomerNumber = Console.ReadLine();
+                    }
+
+
+                    // Skapa ett ID nummer till den nya kunden
+                    // du skapar ett nytt Id via variabeln nesCustomerID
+                    // du letar i HotelManager klassens Customers lista och
+                    // Count liksom räknar alla kunder som redan finns i listan och + 1 lägger till nästa lediga plats
+                    int newCustomerID = hotelManager.Customers.Count + 1;
+
+                    // Skapa självaste nya kunden
+                    var newCustomer = new Customer(newCustomerID, newCustomerName, newCustomerMail, newCustomerNumber);
+
+                    // Lägg till kunden i Customers listan i hotelMAnager klassen genom att använda AddCustomer metoden som finns i HotelMAnager klassen
+                    hotelManager.AddCustomer(newCustomer);
+
+                    //Skriv meddelande till användaren om att kunden lagts till
+                    Console.WriteLine($"Ny kund {newCustomerName} har lagts till. ");
                     break;
                 case 2:
                     break;
@@ -313,8 +376,7 @@ namespace HotellApp
         // Metod som finns i alla switch satsers sista case så man kan återvända till huvudmenyn
         public static void ReturnToMainMenu() // Jag la public static framför så att man kan anropa metoden i alla fliker såsom program, ShowRoomMenuMETHOD osv.
         {
-            Console.WriteLine("Återvänder till huvudmenyn...");
-            Thread.Sleep(1000);
+            Console.WriteLine();
             return; // Bryter loopen och återvänder till huvudmenyn
                     //  Behöver ingen default för jag säkerställde i while loopen innan switch satsen att siffran ska vara mellan 1-5
         }
