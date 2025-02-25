@@ -316,13 +316,55 @@ namespace HotellApp
                             break;
 
 
-                        case 3: 
+                        case 3:
+                            Console.WriteLine();
+                            Console.Write($"Nuvarande kundnummer är {customerToEdit.PhoneNumber}. Skriv in det nummer du vill ändra till: ");
+
+                            string? changedCustomerPhoneNumber = Console.ReadLine();
+
+                            while (string.IsNullOrWhiteSpace(changedCustomerPhoneNumber))
+                            {
+                                Console.WriteLine();
+                                Console.Write("Vänligen skriv in ett giltigt telefonnummer (Ex: 0763999550: ");
+                                changedCustomerPhoneNumber = Console.ReadLine();
+                            }
+
+                            // Spara nya kundnumret 
+                            customerToEdit.PhoneNumber = changedCustomerPhoneNumber;
+
+                            // Meddela användaren
+                            Console.WriteLine($"Kundens telefonnummer har uppdateras till {changedCustomerPhoneNumber}");
                             break;
                     }
+                    break;
 
-                    break;
+
+
                 case 3:
+                    Console.Write("Vänligen ange kundnamnet för den kund du vill ta bort på (Ex: Karin Björk): ");
+
+                    // Ta emot input
+                    string? customerBeingDeleted = Console.ReadLine();
+
+                    // Hantera ? och kolla om namnet användaren vill tabort finns i hotelManager klassens Customers lista
+                    while (string.IsNullOrWhiteSpace(customerBeingDeleted.ToLower()) || !hotelManager.Customers.Any(c => c.Name == customerBeingDeleted)) // ToLower för att göra alla bokstäver småa ifall användarn skiver såhär --> kAriN
+                    {
+                        Console.WriteLine();
+                        Console.Write("Vänligen skriv in ett giltigt namn eller ett kundnamn som finns registrerat: ");
+                        customerBeingDeleted = Console.ReadLine();
+                    }
+
+                    // Skapa en Customer objekt av stringen customerBeingDeleted för att vi ska kunna tabort den från listan, nu är d ju bara en string
+                    var customerDeleted = hotelManager.Customers.Find(c => c.Name == customerBeingDeleted);
+
+                    // Tabort personen nu från CustomersListan
+                    hotelManager.Customers.Remove(customerDeleted);
+
+                    // Meddela kunden om ändringen
+                    Console.WriteLine($"Kunden {customerBeingDeleted} har tagits bort.");
                     break;
+               
+                
                 case 4:
                     ReturnToMainMenu();
                     break;
