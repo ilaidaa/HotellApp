@@ -11,7 +11,7 @@ namespace HotellApp
     public class Room
     {
         // Skapa properties
-        public int Id { get; set; } // Unikt ID för varje rum
+        public int RoomId { get; set; } // Unikt ID för varje rum
         public string RoomName { get; set; } // Namn på rummet (ex. "Rum 101")
         public string RoomType { get; set; } // "Enkelrum" eller "Dubbelrum"
         public int ExtraBeds { get; set; } //  extrasängar
@@ -25,7 +25,7 @@ namespace HotellApp
         // Konstruktor för att skapa ett nytt rum
         public Room(int id, string roomName, string roomType, int extraBeds)
         {
-            Id = id;
+            RoomId = id;
             RoomName = roomName;
             RoomType = roomType;
             ExtraBeds = extraBeds;
@@ -45,14 +45,14 @@ namespace HotellApp
     // Kund Klassen
     public class Customer
     {
-        public int Id { get; set; }
+        public int CustomerId { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
 
         public Customer(int id, string name, string email, string phone)
         {
-            Id = id;
+            CustomerId = id;
             Name = name;
             Email = email;
             PhoneNumber = phone;
@@ -157,7 +157,7 @@ namespace HotellApp
                                          // Andra (blåa) room är ett rum (variabel) som skapats av Room klassen
                                          // Sista Rooms (vit) är från HotelManagers klassen property
             {
-                Console.WriteLine($"ID: {room.Id}, Namn: {room.RoomName}, Typ: {room.RoomType}, Extrasängar: {room.ExtraBeds}, Ledigt: {(room.IsAvailable ? "Ja" : "Nej")}"); // Om det som är på vänster sida av ? stämmer ska den skriva ja annars skriver den det som kommer efter :
+                Console.WriteLine($"ID: {room.RoomId}, Namn: {room.RoomName}, Typ: {room.RoomType}, Extrasängar: {room.ExtraBeds}, Ledigt: {(room.IsAvailable ? "Ja" : "Nej")}"); // Om det som är på vänster sida av ? stämmer ska den skriva ja annars skriver den det som kommer efter :
             }
         }
 
@@ -169,7 +169,7 @@ namespace HotellApp
                                                      // Andra (blåa) customer är en kund (variabel) som skapats av Customer klassen
                                                      // Sista Customers (vit) är från HotelManagers klassen property
             {
-                Console.WriteLine($"ID: {customer.Id}, Namn: {customer.Name}, Email: {customer.Email}, Telefon: {customer.PhoneNumber}");
+                Console.WriteLine($"ID: {customer.CustomerId}, Namn: {customer.Name}, Email: {customer.Email}, Telefon: {customer.PhoneNumber}");
             }
         }
 
@@ -191,7 +191,7 @@ namespace HotellApp
 
             // Om felen ovan inte existerar gå ner t följande rader:
             // Vi ska hitta rätt rum och rätt kund med hjälp av FirstOrDefault
-            Room room = Rooms.FirstOrDefault(r => r.Id == roomId); // FirstOrDefault() är en metod som används för att hämta det första elementet i en samling (mitt fall lista) som uppfyller ett visst villkor.
+            Room room = Rooms.FirstOrDefault(r => r.RoomId == roomId); // FirstOrDefault() är en metod som används för att hämta det första elementet i en samling (mitt fall lista) som uppfyller ett visst villkor.
                                                                    // Villkoret är den som finns i parentesen bredvid.
                                                                    // r : Variablerna i parentesen är bara påhittade i detta fall r så jag kan koppla till room i huvet
                                                                    // => : är lambda-operatorn, som betyder "går till" eller "returnerar".
@@ -208,7 +208,7 @@ namespace HotellApp
             // Den gör det för att jag ska hitta rätt rum att boka
             // jag vill skapa en bokning för en viss kund i ett visst rum.
             // För att kunna göra det måste jag hitta det specifika rummet som kunden vill boka.
-            Customer customer = Customers.FirstOrDefault(c => c.Id == customerId); // Samma som ovan
+            Customer customer = Customers.FirstOrDefault(c => c.CustomerId == customerId); // Samma som ovan
 
 
             // Om rummet ELLER kunden inte hittas, då meddela user

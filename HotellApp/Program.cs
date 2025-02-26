@@ -170,7 +170,7 @@ namespace HotellApp
                     Console.WriteLine("Befintliga Kunder:");
                     foreach(var customer in hotelManager.Customers)
                     {
-                        Console.WriteLine($"- Kund ID: {customer.Id},  Namn: {customer.Name}, Email: {customer.Email}, Tel: {customer.PhoneNumber})");
+                        Console.WriteLine($"- Kund ID: {customer.CustomerId},  Namn: {customer.Name}, Email: {customer.Email}, Tel: {customer.PhoneNumber})");
                     }
 
                     // Ta emot ID från personen som ska göra en bookning
@@ -184,7 +184,7 @@ namespace HotellApp
                     int customerId;
 
                     // Hantera vad som gänder om inputCustomerID inte lyckas konverteras eller om Kund Id inte hittas
-                    while(!int.TryParse(inputCustomerId, out customerId) || !hotelManager.Customers.Any(c => c.Id == customerId))
+                    while(!int.TryParse(inputCustomerId, out customerId) || !hotelManager.Customers.Any(c => c.CustomerId == customerId))
                     {
                         Console.WriteLine();
                         Console.Write("Fel: Ange ett giltigt kund-ID: ");
@@ -200,7 +200,7 @@ namespace HotellApp
                     Console.WriteLine("Befintliga Rum: ");
                     foreach(var room in hotelManager.Rooms)
                     {
-                        Console.WriteLine($"Rum ID: {room.Id}, Namn: {room.RoomName}, Typ: {room.RoomType}, Extrasängar: {room.ExtraBeds})");
+                        Console.WriteLine($"Rum ID: {room.RoomId}, Namn: {room.RoomName}, Typ: {room.RoomType}, Extrasängar: {room.ExtraBeds})");
                     }
 
                     // Ta emot ID från personen som ska göra en bookning
@@ -214,7 +214,7 @@ namespace HotellApp
                     int roomId;
 
                     // Hantera vad som händer om inputRoomID inte lyckas konverteras eller om rum Id inte hittas
-                    while (!int.TryParse(inputRoomId, out roomId) || !hotelManager.Rooms.Any(r => r.Id == roomId))
+                    while (!int.TryParse(inputRoomId, out roomId) || !hotelManager.Rooms.Any(r => r.RoomId == roomId))
                     {
                         Console.WriteLine();
                         Console.Write("Fel: Ange ett giltigt rums-ID: ");
