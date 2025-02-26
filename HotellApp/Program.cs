@@ -59,12 +59,13 @@ namespace HotellApp
 
                         case 3:
                             // Visa submeny 3
-                            ShowBookingMenu();
+                            ShowBookingMenu(hotelManager);
                             break;
 
                         case 4:
                             // Visa submeny 4
                             AvailabilityMenu();
+
                             break;
 
                         case 5:
@@ -125,15 +126,15 @@ namespace HotellApp
 
 
         // Boknings Meny
-        static void ShowBookingMenu()
+        static void ShowBookingMenu(HotelManager hotelManager)
         {
             Console.Clear();
             Console.WriteLine("======================================");
             Console.WriteLine("|\t                             |");
             Console.WriteLine("|\t1. Skapa ny bokning          |");
-            Console.WriteLine("|\t3. Ändra bokning             |");
-            Console.WriteLine("|\t4. Avboka en bokning         |");
-            Console.WriteLine("|\t5. Återvänd till Huvudmeny   |");
+            Console.WriteLine("|\t2. Ändra bokning             |");
+            Console.WriteLine("|\t3. Avboka en bokning         |");
+            Console.WriteLine("|\t4. Återvänd till Huvudmeny   |");
             Console.WriteLine("|\t                             |");
             Console.WriteLine("======================================");
 
@@ -151,19 +152,127 @@ namespace HotellApp
                 string? input = Console.ReadLine();
 
                 // Hantera ? och om det är mer eller mindre än 5
-                if (int.TryParse(input, out choice) && choice <= 5 && choice >= 1)
+                if (int.TryParse(input, out choice) && choice <= 4 && choice >= 1)
                 {
                     break; // Bryt loopen så du kan gå t switchen
                 }
 
-                Console.WriteLine("Vänligen välj en siffra från menyn 1 - 5.");
+                Console.WriteLine("Vänligen välj en siffra från menyn 1 - 4.");
             }
 
             // Hantera kundens önskemål i submenyn beroende på vad hen vlt genom submeny
             switch (choice)
             {
                 case 1:
+                    // Börja med att samla alla element som behövs för att använda metoden MakeBooking som finns i HotelManager klassen
+
+                    // Visa befintliga kunder för att göra det tydligt för användaren att kunna välja Kund ID
+                    Console.WriteLine("Befintliga Kunder:");
+                    foreach(var customer in hotelManager.Customers)
+                    {
+                        Console.WriteLine($"- Kund ID: {customer.Id},  Namn: {customer.Name}, Email: {customer.Email}, Tel: {customer.PhoneNumber})");
+                    }
+
+                    // Ta emot ID från personen som ska göra en bookning
+                    Console.WriteLine();
+                    Console.Write("Vänligen ange kund ID på personen du vill göra en ny bokning för: ");
+
+                    // Ta emot kund id 
+                    string? inputCustomerId = Console.ReadLine();
+
+                    // Skapa en int variabel som ska vara den nya customerId när inputCustomerId stringen konverteras
+                    int customerId;
+
+                    // Hantera vad som gänder om inputCustomerID inte lyckas konverteras eller om Kund Id inte hittas
+                    while(!int.TryParse(inputCustomerId, out customerId) || !hotelManager.Customers.Any(c => c.Id == customerId))
+                    {
+                        Console.WriteLine();
+                        Console.Write("Fel: Ange ett giltigt kund-ID: ");
+                        inputCustomerId = Console.ReadLine(); // Låt användaren försöka tills hen får rätt.
+                    }
+
+
+
+
+
+
+                    // Visa befintliga rum för att göra det tydligt för användaren att kunna välja rum ID
+                    Console.WriteLine("Befintliga Rum: ");
+                    foreach(var room in hotelManager.Rooms)
+                    {
+                        Console.WriteLine($"Rum ID: {room.Id}, Namn: {room.RoomName}, Typ: {room.RoomType}, Extrasängar: {room.ExtraBeds})");
+                    }
+
+                    // Ta emot ID från personen som ska göra en bookning
+                    Console.WriteLine();
+                    Console.Write("Vänligen ange rums ID på rummet du vill göra en ny bokning för: ");
+
+                    // Ta emot input i string
+                    string? inputRoomId = Console.ReadLine();
+
+                    // Skapa en int variabel som ska vara den nya roomId när inputCustomerId stringen konverteras
+                    int roomId;
+
+                    // Hantera vad som händer om inputRoomID inte lyckas konverteras eller om rum Id inte hittas
+                    while (!int.TryParse(inputRoomId, out roomId) || !hotelManager.Rooms.Any(r => r.Id == roomId))
+                    {
+                        Console.WriteLine();
+                        Console.Write("Fel: Ange ett giltigt rums-ID: ");
+                        inputRoomId = Console.ReadLine();
+                    }
+
+
+
+
+
+                    // Ta emot startdatum för vistelsen
+                    Console.WriteLine();
+                    Console.Write("Ange startdatum (YYYY-MM-DD) för bokningen: ");
+
+                    // Spara datumsinput i string
+                    string? inputDateTime = Console.ReadLine();
+
+                    // skapa en DateTime variabel som ska få värde när den konverterats klart i while loopen nedan
+                    DateTime startDate;
+
+                    // Om DateTime inte konverteras eller om startdatumet för bokningen är mindre än dagen datum ska meddelandet i blocket visas
+                    while (!DateTime.TryParse(inputDateTime, out startDate) || startDate < DateTime.Today)
+                    {
+                        Console.WriteLine();
+                        Console.Write("Vänligen ange ett giltigt datum / ett datum som inte är i det förflutna: ");
+                        inputDateTime = Console.ReadLine();
+                    }
+
+
+
+
+
+                    // Ta emot antal nätter för vistelsen
+                    Console.WriteLine();
+                    Console.Write("Ange antal nätter: ");
+
+                    // Ta emot antal nätter
+                    string? inputNights = Console.ReadLine();
+
+                    // Skapa en int variabel som ska få värde när den konverterats klart i while loopen nedan
+                    int nights;
+
+                    // Om inputNights inte lyckas konverteras eller om nätter är mindre eller lika med 0 ge ett felmeddelande
+                    while (!int.TryParse(inputNights, out nights) || nights <= 0)
+                    {
+                        Console.WriteLine();
+                        Console.Write("Vänligen ange ett giltigt antal / ett antal som inte är eller mindre än 0: ");
+                        inputNights = Console.ReadLine();
+                    }
+
+
+
+
+                    // Nu anropar vi MakeBooking metoden med de insamlade uppgifterna
+                    hotelManager.MakeBooking(customerId, roomId, startDate, nights);
                     break;
+
+
                 case 2:
                     break;
                 case 3:
@@ -171,6 +280,7 @@ namespace HotellApp
                 case 4:
                     ReturnToMainMenu();
                     break;
+            
             }
 
         }
