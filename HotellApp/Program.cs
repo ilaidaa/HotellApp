@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System;
 using System.Runtime.Intrinsics.Arm;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace HotellApp
 {
@@ -133,8 +134,7 @@ namespace HotellApp
             Console.WriteLine("|\t                             |");
             Console.WriteLine("|\t1. Skapa ny bokning          |");
             Console.WriteLine("|\t2. Ändra bokning             |");
-            Console.WriteLine("|\t3. Avboka en bokning         |");
-            Console.WriteLine("|\t4. Återvänd till Huvudmeny   |");
+            Console.WriteLine("|\t3. Återvänd till Huvudmeny   |");
             Console.WriteLine("|\t                             |");
             Console.WriteLine("======================================");
 
@@ -153,12 +153,12 @@ namespace HotellApp
                 string? input = Console.ReadLine();
 
                 // Hantera ? och om det är mer eller mindre än 5
-                if (int.TryParse(input, out choice) && choice <= 4 && choice >= 1)
+                if (int.TryParse(input, out choice) && choice <= 3 && choice >= 1)
                 {
                     break; // Bryt loopen så du kan gå t switchen
                 }
 
-                Console.WriteLine("Vänligen välj en siffra från menyn 1 - 4.");
+                Console.WriteLine("Vänligen välj en siffra från menyn 1 - 3.");
             }
 
             // Hantera kundens önskemål i submenyn beroende på vad hen vlt genom submeny
@@ -169,7 +169,7 @@ namespace HotellApp
 
                     // Visa befintliga kunder för att göra det tydligt för användaren att kunna välja Kund ID
                     Console.WriteLine("Befintliga Kunder:");
-                    foreach(var customer in hotelManager.Customers)
+                    foreach (var customer in hotelManager.Customers)
                     {
                         Console.WriteLine($"- Kund ID: {customer.CustomerId},  Namn: {customer.Name}, Email: {customer.Email}, Tel: {customer.PhoneNumber})");
                     }
@@ -185,7 +185,7 @@ namespace HotellApp
                     int customerId;
 
                     // Hantera vad som gänder om inputCustomerID inte lyckas konverteras eller om Kund Id inte hittas
-                    while(!int.TryParse(inputCustomerId, out customerId) || !hotelManager.Customers.Any(c => c.CustomerId == customerId))
+                    while (!int.TryParse(inputCustomerId, out customerId) || !hotelManager.Customers.Any(c => c.CustomerId == customerId))
                     {
                         Console.WriteLine();
                         Console.Write("Fel: Ange ett giltigt kund-ID: ");
@@ -199,7 +199,7 @@ namespace HotellApp
 
                     // Visa befintliga rum för att göra det tydligt för användaren att kunna välja rum ID
                     Console.WriteLine("Befintliga Rum: ");
-                    foreach(var room in hotelManager.Rooms)
+                    foreach (var room in hotelManager.Rooms)
                     {
                         Console.WriteLine($"Rum ID: {room.RoomId}, Namn: {room.RoomName}, Typ: {room.RoomType}, Extrasängar: {room.ExtraBeds})");
                     }
@@ -283,7 +283,7 @@ namespace HotellApp
                     string? nameOfBooker = Console.ReadLine();
 
                     // Hantera ? och kolla om namnet ens finns "om strängen är null eller bokar INTE finns i listan)
-                    while(string.IsNullOrWhiteSpace(nameOfBooker) || !hotelManager.Customers.Any(c => c.Name == nameOfBooker))
+                    while (string.IsNullOrWhiteSpace(nameOfBooker) || !hotelManager.Customers.Any(c => c.Name == nameOfBooker))
                     {
                         Console.WriteLine();
                         Console.Write("Vänligen skriv in ett giltigt namn / en kund som existerar: ");
@@ -302,14 +302,88 @@ namespace HotellApp
                     // Med.ToList() → Konverterar resultatet till en lista(List<T>), vilket gör det enklare att hantera.
                     // Varför inte First() här? jo för att Where() Returnerar alla objekt som matchar villkoret. Används när du förväntar dig flera träffar. 
                     // Men first returnerar bara första objektet som matchar villkoret
-                    var customerBookings = hotelManager.Bookings.Where(c => c.Customer == customerBooking).ToList(); 
+                    var customerBookings = hotelManager.Bookings.Where(c => c.Customer == customerBooking).ToList();
 
+                    // Om kunden inte har bokningar, avbryt
+                    if (!customerBookings.Any())
+                    {
+                        Console.WriteLine($"Kunden {customerBooking} har inga bokningar att ändra.");
+                        return;
+                    }
 
+                    // Visa bokningar och låt användaren välja vilken de vill ändra
+                    Console.WriteLine();
+                    Console.WriteLine($"Bokningar för {customerBooking}: ");
 
+                    for (int i = 0; i < customerBookings.Count; i++) // Count är där för att den räknar och det är en lista.
+                    {
+                        Booking booking = customerBookings[i]; // Skapar ett objekt av Booking klassen och lägger varje nu customerBookings i den
+                        Console.WriteLine($"{i + 1}. Rum: {booking.BookedRoom.RoomName}, Från: {booking.StartDate.ToShortDateString()} Till: {booking.EndDate.ToShortDateString()}");
+                        // i + 1 = så den räknar från 1. vi börjar ju loopen från 0
+                        // ToShortDateString behövs ej men blir skitfult utan
+                    }
+
+                    // Be användaren välja en bokning
+                    Console.WriteLine();
+                    Console.Write("Ange siffran för den bokning du vill ändra: ");
+
+                    // ta emot användarens input i string
+                    string? choosenInput = Console.ReadLine();
+
+                    // Skapa denna int variabel som ska få ett värde när den konverteras i while loopen
+                    int chosenBooking;
+
+                    // Hantera ? och konvertera choosenInput. Du säger "Om det inte går att konvertera, om den är mindre än 1 eller större än antal bookningar som finns
+                    while(!int.TryParse(choosenInput, out chosenBooking) || chosenBooking < 1 || chosenBooking > customerBookings.Count)
+                    {
+                        Console.WriteLine();
+                        Console.Write("Felaktigt val, ange en giltig siffra: ");
+                        choosenInput = Console.ReadLine();  // Låt användaren testa igen
+                    }
+
+                    // Hämta den valda bokningen
+                    // -1 används eftersom listor börjar på index 0, men användare tänker i "1, 2, 3...".
+                    // Denna rad hämtar en specifik bokning från listan customerBookings, baserat på användarens val.
+                    Booking selectedBooking = customerBookings[chosenBooking - 1];
+
+                    // Låt användaren byta datum på sin bokning
+                    // Du kan använda choosenInput för den kommer ju aldrig vara fel. Den måste vara giltg så att man kan hoppa ner till nästa kod från while-loopen
+                    Console.Write($"Du har valt att ändra datum för bokningen {choosenInput}. Ange nytt startdatum (YYYY-MM-DD): ");
+
+                    // Starta en variabel som ska vara det som konverteras i whileloopen
+                    DateTime newStartDate;
+
+                    // Konvertera användaren input I SJÄLVA while loopen och säg att nya datumet inte ska vara mindre än dagens datum
+                    // Om input är ogiltig, går programmet tillbaka in i loopen och anropar Console.ReadLine() igen.
+                    while (!DateTime.TryParse(Console.ReadLine(), out newStartDate) || newStartDate < DateTime.Today)
+                    {
+                        Console.WriteLine();
+                        Console.Write("Felaktigt datum, försök igen: ");
+                    }
+
+                    // Fråga om nätter nya bookningen ska vara
+                    Console.WriteLine();
+                    Console.Write("Ange nytt antal nätter: ");
+
+                    // Skapa en variabel som ska konverteras i while loopen och få värde där
+                    int newNights;
+
+                    // Du säger "Om användarens input inte går att konvertera eller om nya nätterna är mindre än eller lika med 0"
+                    while (!int.TryParse(Console.ReadLine(), out newNights) || newNights <= 0)
+                    {
+                        Console.WriteLine();
+                        Console.Write("Felaktigt antal nätter, försök igen: ");
+                    }
+
+                    // Skapa en ny slutdatum också genom att lägga på antal nätter på startdatumet
+                    // AddDays() är en inbyggd metod i C#. Den används för att lägga till eller ta bort dagar från ett datum.
+                    DateTime newEndDate = newStartDate.AddDays(newNights);
+
+                  
                     break;
+
+
                 case 3:
-                    break;
-                case 4:
                     ReturnToMainMenu();
                     break;
             
