@@ -146,6 +146,7 @@ namespace HotellApp
             while (true)
             {
                 // Fråga om inpput
+                Console.WriteLine();
                 Console.Write("Vänligen välj ett alternativ genom att skriva in siffran för det val du önskar och tryck på Enter: ");
 
                 // Lagra input
@@ -274,6 +275,37 @@ namespace HotellApp
 
 
                 case 2:
+                    // Fråga om vem som ska boka
+                    Console.WriteLine();
+                    Console.Write("Vänligen ange namnet på personen för den bokning som du önskar ändra (Ex: Karin Larsson: ");
+
+                    // Ta emot nput
+                    string? nameOfBooker = Console.ReadLine();
+
+                    // Hantera ? och kolla om namnet ens finns "om strängen är null eller bokar INTE finns i listan)
+                    while(string.IsNullOrWhiteSpace(nameOfBooker) || !hotelManager.Customers.Any(c => c.Name == nameOfBooker))
+                    {
+                        Console.WriteLine();
+                        Console.Write("Vänligen skriv in ett giltigt namn / en kund som existerar: ");
+                        nameOfBooker = Console.ReadLine();
+                    }
+
+                    // Hitta kunden och HÄMTA kunden baserat på namnet, First hämtar ju en kund, Any kollar bara om det finns en matchande element
+                    // Du behöver inte använda FirstOrDefault för du dubbelkollade i while loopen att namnet fanns i listan med hjälp av Any redan.
+                    Customer customerBooking = hotelManager.Customers.First(c => c.Name == nameOfBooker);
+
+                    // Hitta bokningar som kunden har gjort och gör det till en lista med hjälp av ToList()
+                    // Eftersom ToList() används i slutet, blir customerBookings av typen List<Booking>.
+                    // hotelManager är en instans av klassen HotelManager, som innehåller listan Bookings. hotelManager.Bookings är alltså en lista(List<Booking>) med alla bokningar på hotellet.
+                    // .Where() filtrerar en lista eller samling baserat på ett villkor. Den returnerar bara de objekt som uppfyller villkoret.
+                    // Utan .ToList() → .Where() returnerar en IEnumerable (en uppsättning data som kan loopas igenom).
+                    // Med.ToList() → Konverterar resultatet till en lista(List<T>), vilket gör det enklare att hantera.
+                    // Varför inte First() här? jo för att Where() Returnerar alla objekt som matchar villkoret. Används när du förväntar dig flera träffar. 
+                    // Men first returnerar bara första objektet som matchar villkoret
+                    var customerBookings = hotelManager.Bookings.Where(c => c.Customer == customerBooking).ToList(); 
+
+
+
                     break;
                 case 3:
                     break;
