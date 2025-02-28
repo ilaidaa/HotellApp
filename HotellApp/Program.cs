@@ -64,8 +64,7 @@ namespace HotellApp
 
                         case 4:
                             // Visa submeny 4
-                            AvailabilityMenu();
-
+                            AvailabilityMenu(hotelManager);
                             break;
 
                         case 5:
@@ -85,11 +84,6 @@ namespace HotellApp
 
 
         }
-
-
-
-
-
 
 
 
@@ -118,30 +112,16 @@ namespace HotellApp
 
 
 
-
-
-
-
-
-
-
-       
-       
-
-
-
-
-
-
         // Tillgänglighets Meny
-        static void AvailabilityMenu()
+        static void AvailabilityMenu(HotelManager hotelManager)
         {
             Console.Clear();
             Console.WriteLine("======================================");
             Console.WriteLine("|\t                             |");
-            Console.WriteLine("|\t1. Sök lediga rum            |");
-            Console.WriteLine("|\t2. Rumsstatus                |");
-            Console.WriteLine("|\t3. Återvänd till Huvudmeny   |");
+            Console.WriteLine("|\t1. Visa alla bokningar       |");
+            Console.WriteLine("|\t2. Visa alla rum             |");
+            Console.WriteLine("|\t3. Visa alla kunder          |");
+            Console.WriteLine("|\t4. Återvänd till Huvudmeny   |");
             Console.WriteLine("|\t                             |");
             Console.WriteLine("======================================");
 
@@ -159,24 +139,34 @@ namespace HotellApp
                 string? input = Console.ReadLine();
 
                 // Hantera ? och om det är mer eller mindre än 5
-                if (int.TryParse(input, out choice) && choice <= 3 && choice >= 1)
+                if (int.TryParse(input, out choice) && choice <= 4 && choice >= 1)
                 {
                     break; // Bryt loopen så du kan gå t switchen
                 }
 
-                Console.WriteLine("Vänligen välj en siffra från menyn 1 - 5.");
+                Console.WriteLine("Vänligen välj en siffra från menyn 1 - 4.");
             }
 
             // Hantera kundens önskemål i submenyn beroende på vad hen vlt genom submeny
             switch (choice)
             {
                 case 1:
+                    Console.WriteLine();
+                    hotelManager.ShowBookings();
                     break;
+
                 case 2:
+                    Console.WriteLine();
+                    hotelManager.ShowRooms();
                     break;
-                case 3:              
-                    Console.WriteLine("Återvänder till huvudme" +
-                        "nyn...");
+
+                case 3:
+                    Console.WriteLine();
+                    hotelManager.ShowCustomers();
+                    break;
+
+                case 4:              
+                    Console.WriteLine("Återvänder till huvudmenyn...");
                     Thread.Sleep(1000);
                     return; // Bryter loopen och återvänder till huvudmenyn
                     //  Behöver ingen default för jag säkerställde i while loopen innan switch satsen att siffran ska vara mellan 1-5
@@ -195,9 +185,6 @@ namespace HotellApp
             Console.WriteLine("\nTryck på valfri tangent för att fortsätta...");
             Console.ReadKey();
         }
-
-
-
 
 
 

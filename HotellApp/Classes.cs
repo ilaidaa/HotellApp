@@ -157,7 +157,7 @@ namespace HotellApp
                                          // Andra (blåa) room är ett rum (variabel) som skapats av Room klassen
                                          // Sista Rooms (vit) är från HotelManagers klassen property
             {
-                Console.WriteLine($"ID: {room.RoomId}, Namn: {room.RoomName}, Typ: {room.RoomType}, Extrasängar: {room.ExtraBeds}, Ledigt: {(room.IsAvailable ? "Ja" : "Nej")}"); // Om det som är på vänster sida av ? stämmer ska den skriva ja annars skriver den det som kommer efter :
+                Console.WriteLine($"- ID: {room.RoomId}, Namn: {room.RoomName}, Typ: {room.RoomType}, Extrasängar: {room.ExtraBeds}, Ledigt: {(room.IsAvailable ? "Ja" : "Nej")}"); // Om det som är på vänster sida av ? stämmer ska den skriva ja annars skriver den det som kommer efter :
             }
         }
 
@@ -169,7 +169,19 @@ namespace HotellApp
                                                      // Andra (blåa) customer är en kund (variabel) som skapats av Customer klassen
                                                      // Sista Customers (vit) är från HotelManagers klassen property
             {
-                Console.WriteLine($"ID: {customer.CustomerId}, Namn: {customer.Name}, Email: {customer.Email}, Telefon: {customer.PhoneNumber}");
+                Console.WriteLine($"- ID: {customer.CustomerId}, Namn: {customer.Name}, Email: {customer.Email}, Telefon: {customer.PhoneNumber}");
+            }
+        }
+
+        // Metod: Visa alla bokningar
+        public void ShowBookings()
+        {
+            Console.WriteLine("Lista över alla bookningar:");
+            foreach (Booking booking in Bookings) // Första (gröna) Customer är klassen Customer som finns längst upp
+                                                     // Andra (blåa) customer är en kund (variabel) som skapats av Customer klassen
+                                                     // Sista Customers (vit) är från HotelManagers klassen property
+            {
+                Console.WriteLine($"- Bokad rum: {booking.BookedRoom}, bookare: {booking.Customer}, startdatum: {booking.StartDate}, slutdatum: {booking.EndDate}");
             }
         }
 
