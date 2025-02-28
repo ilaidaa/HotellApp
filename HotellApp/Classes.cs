@@ -176,6 +176,7 @@ namespace HotellApp
         // Metod: Visa alla bokningar
         public void ShowBookings()
         {
+
             Console.WriteLine("Lista över alla bookningar:");
             foreach (Booking booking in Bookings) // Första (gröna) Customer är klassen Customer som finns längst upp
                                                      // Andra (blåa) customer är en kund (variabel) som skapats av Customer klassen
