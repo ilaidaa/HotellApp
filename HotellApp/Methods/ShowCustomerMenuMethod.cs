@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HotellApp.Methods;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -250,7 +251,7 @@ namespace HotellApp
 
 
                 case 4:
-                    Program.ReturnToMainMenu();
+                    ReturnToMainMenuMethod.ReturnToMainMenu();
                     break;
             }
 

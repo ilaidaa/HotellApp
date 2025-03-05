@@ -307,7 +307,7 @@ namespace HotellApp.Methods
                     break;
 
                 case 4:
-                    Program.ReturnToMainMenu();
+                    ReturnToMainMenuMethod.ReturnToMainMenu();
                     break;
             }
 
