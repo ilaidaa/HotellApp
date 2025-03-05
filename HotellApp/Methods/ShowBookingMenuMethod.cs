@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HotellApp
+namespace HotellApp.Methods
 {
     internal class ShowBookingMenuMethod
     {
         // Metod som ska hantera "Hantera Bokningar" alternativet i huvudmenyn Meny
-        public static void ShowBookingMenu(HotelManager hotelManager) // public före static så att man kan anropa metoden i Program
+        public static void ShowBookingMenu(Classes.HotelManager hotelManager) // public före static så att man kan anropa metoden i Program
         {
             Console.Clear();
             Console.WriteLine("======================================");
@@ -174,7 +174,7 @@ namespace HotellApp
 
                     // Hitta kunden och HÄMTA kunden baserat på namnet, First hämtar ju en kund, Any kollar bara om det finns en matchande element
                     // Du behöver inte använda FirstOrDefault för du dubbelkollade i while loopen att namnet fanns i listan med hjälp av Any redan.
-                    Customer customerBooking = hotelManager.Customers.First(c => c.Name == nameOfBooker);
+                    Classes.Customer customerBooking = hotelManager.Customers.First(c => c.Name == nameOfBooker);
 
                     // Hitta bokningar som kunden har gjort och gör det till en lista med hjälp av ToList()
                     // Eftersom ToList() används i slutet, blir customerBookings av typen List<Booking>.
@@ -199,7 +199,7 @@ namespace HotellApp
 
                     for (int i = 0; i < customerBookings.Count; i++) // Count är där för att den räknar och det är en lista.
                     {
-                        Booking booking = customerBookings[i]; // Skapar ett objekt av Booking klassen och lägger varje nu customerBookings i den
+                        Classes.Booking booking = customerBookings[i]; // Skapar ett objekt av Booking klassen och lägger varje nu customerBookings i den
                         Console.WriteLine($"{i + 1}. Rum: {booking.BookedRoom.RoomName}, Från: {booking.StartDate.ToShortDateString()} Till: {booking.EndDate.ToShortDateString()}");
                         // i + 1 = så den räknar från 1. vi börjar ju loopen från 0
                         // ToShortDateString behövs ej men blir skitfult utan
@@ -226,7 +226,7 @@ namespace HotellApp
                     // Hämta den valda bokningen
                     // -1 används eftersom listor börjar på index 0, men användare tänker i "1, 2, 3...".
                     // Denna rad hämtar en specifik bokning från listan customerBookings, baserat på användarens val.
-                    Booking selectedBooking = customerBookings[chosenBooking - 1];
+                    Classes.Booking selectedBooking = customerBookings[chosenBooking - 1];
 
                     // Låt användaren byta datum på sin bokning
                     // Du kan använda choosenInput för den kommer ju aldrig vara fel. Den måste vara giltg så att man kan hoppa ner till nästa kod från while-loopen

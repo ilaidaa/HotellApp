@@ -2,6 +2,7 @@
 using System;
 using System.Runtime.Intrinsics.Arm;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using HotellApp.Methods;
 
 namespace HotellApp
 {
@@ -9,7 +10,7 @@ namespace HotellApp
     {
         static void Main(string[] args)
         {
-            HotelManager hotelManager = new HotelManager(); // Ropa metoden från Classes fliken
+            Classes.HotelManager hotelManager = new Classes.HotelManager(); // Ropa metoden från Classes mappen
 
 
             // Bool för att köra programmet tills användaren stoppar
@@ -113,7 +114,7 @@ namespace HotellApp
 
 
         // Tillgänglighets Meny
-        static void AvailabilityMenu(HotelManager hotelManager)
+        static void AvailabilityMenu(Classes.HotelManager hotelManager)
         {
             Console.Clear();
             Console.WriteLine("======================================");

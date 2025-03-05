@@ -10,7 +10,7 @@ namespace HotellApp
     {
 
         // Metod som ska hantera "Hantera Kunder" alternativet i huvudmenyn Meny
-        public static void ShowCustomerMenu(HotelManager hotelManager)  // Metoden måste ha public i början så man kan anropa den i Program fliken
+        public static void ShowCustomerMenu(Classes.HotelManager hotelManager)  // Metoden måste ha public i början så man kan anropa den i Program fliken
         {
             Console.Clear();
             Console.WriteLine("======================================");
@@ -104,7 +104,7 @@ namespace HotellApp
                     int newCustomerID = hotelManager.Customers.Count + 1;
 
                     // Skapa självaste nya kunden
-                    var newCustomer = new Customer(newCustomerID, newCustomerName, newCustomerMail, newCustomerNumber);
+                    var newCustomer = new Classes.Customer(newCustomerID, newCustomerName, newCustomerMail, newCustomerNumber);
 
                     // Lägg till kunden i Customers listan i hotelMAnager klassen genom att använda AddCustomer metoden som finns i HotelMAnager klassen
                     hotelManager.AddCustomer(newCustomer);

@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HotellApp
+namespace HotellApp.Methods
 {
     public class ShowRoomMenuMethod
     {
         // Metod som ska hantera "Hantera Rum" alternativet i huvudmenyn Meny
-        public static void ShowRoomMenu(HotelManager hotelManager) // Ta in hotelManager metoden i ShowRoomMetoden så att den ska funka
+        public static void ShowRoomMenu(Classes.HotelManager hotelManager) // Ta in hotelManager metoden i ShowRoomMetoden så att den ska funka
         {
             Console.Clear();
             Console.WriteLine("======================================");
@@ -118,7 +118,7 @@ namespace HotellApp
                     string roomName = $"{100 + newId}"; // Skapar rumsnamn t.ex. "Rum 101"
 
                     // Skapar ett nytt rums objekt av klassen Rooms med nya id och alla andra element som vi bestämt ovan
-                    Room newRoom = new Room(newId, roomName, roomType, extraBeds);
+                    Classes.Room newRoom = new Classes.Room(newId, roomName, roomType, extraBeds);
 
                     // Ropar på HotelManager klassens metod AddRoom som ska lägga till i listan.
                     hotelManager.AddRoom(newRoom);
@@ -130,7 +130,7 @@ namespace HotellApp
 
 
                 case 2:
-                    Console.Write("Vänligen ange rumsnumret för det rum du vill ändra (Ex: 101): ");       
+                    Console.Write("Vänligen ange rumsnumret för det rum du vill ändra (Ex: 101): ");
 
                     // Ta emot användarens svar i string 
                     string? input = Console.ReadLine();
