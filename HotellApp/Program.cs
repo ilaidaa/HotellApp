@@ -90,15 +90,5 @@ namespace HotellApp
 
 
 
-
-
-       
-
-
-
-
-
-
-
     }
 }

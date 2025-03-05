@@ -85,7 +85,7 @@ namespace HotellApp.Classes
                                                           // Andra (blåa) customer är en kund (variabel) som skapats av Customer klassen
                                                           // Sista Customers (vit) är från HotelManagers klassen property
             {
-                Console.WriteLine($"- Bokad rum: {booking.BookedRoom}, bookare: {booking.Customer}, startdatum: {booking.StartDate.ToShortDateString()}, slutdatum: {booking.EndDate.ToShortDateString()}");
+                Console.WriteLine($"- Bokad rum: {booking.BookedRoom.RoomName}, bookare: {booking.Customer.Name}, startdatum: {booking.StartDate.ToShortDateString()}, slutdatum: {booking.EndDate.ToShortDateString()}");
             }
         }
 
