@@ -302,7 +302,7 @@ namespace HotellApp.Methods
                     hotelManager.Rooms.Remove(room);
 
                     // Meddela användaren
-                    Console.WriteLine($"Rummet {roomGettingDeleted} har tagits bort. ");
+                    Console.WriteLine($"Rum {roomGettingDeleted} har tagits bort. ");
 
                     break;
 

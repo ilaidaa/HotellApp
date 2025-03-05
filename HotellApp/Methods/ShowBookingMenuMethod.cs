@@ -50,6 +50,7 @@ namespace HotellApp.Methods
                     // Börja med att samla alla element som behövs för att använda metoden MakeBooking som finns i HotelManager klassen
 
                     // Visa befintliga kunder för att göra det tydligt för användaren att kunna välja Kund ID
+                    Console.WriteLine();
                     Console.WriteLine("Befintliga Kunder:");
                     foreach (var customer in hotelManager.Customers)
                     {
@@ -80,10 +81,11 @@ namespace HotellApp.Methods
 
 
                     // Visa befintliga rum för att göra det tydligt för användaren att kunna välja rum ID
+                    Console.WriteLine();
                     Console.WriteLine("Befintliga Rum: ");
                     foreach (var room in hotelManager.Rooms)
                     {
-                        Console.WriteLine($"Rum ID: {room.RoomId}, Namn: {room.RoomName}, Typ: {room.RoomType}, Extrasängar: {room.ExtraBeds})");
+                        Console.WriteLine($"-Rum ID: {room.RoomId}, Namn: Rum {room.RoomName}, Typ: {room.RoomType}, Extrasängar: {room.ExtraBeds})");
                     }
 
                     // Ta emot ID från personen som ska göra en bookning
@@ -110,7 +112,7 @@ namespace HotellApp.Methods
 
                     // Ta emot startdatum för vistelsen
                     Console.WriteLine();
-                    Console.Write("Ange startdatum (YYYY-MM-DD) för bokningen: ");
+                    Console.Write("Ange startdatum (YYYY-MM-DD) för bokningen (glöm inte - teckn mellan siffrorna): ");
 
                     // Spara datumsinput i string
                     string? inputDateTime = Console.ReadLine();
@@ -152,6 +154,7 @@ namespace HotellApp.Methods
 
 
                     // Nu anropar vi MakeBooking metoden med de insamlade uppgifterna
+                    Console.WriteLine(); // design
                     hotelManager.MakeBooking(customerId, roomId, startDate, nights);
                     break;
 

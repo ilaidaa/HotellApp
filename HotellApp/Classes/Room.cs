@@ -22,8 +22,9 @@ namespace HotellApp.Classes
                                                                                // utan att söka i hela hotellets bokningslista.
                                                                                // Listan kommer användas i HotelManager klassen längst ner sen
 
-            // Konstruktor för att skapa ett nytt rum
-            public Room(int id, string roomName, string roomType, int extraBeds)
+
+        // Konstruktor för att skapa ett nytt rum
+        public Room(int id, string roomName, string roomType, int extraBeds)
             {
                 RoomId = id;
                 RoomName = roomName;
@@ -31,6 +32,8 @@ namespace HotellApp.Classes
                 ExtraBeds = extraBeds;
                 IsAvailable = true;
             }
+
+
 
         }
 

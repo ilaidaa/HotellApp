@@ -30,19 +30,20 @@ namespace HotellApp
             while (true)
             {
                 // Fråga om inpput
+                Console.WriteLine();
                 Console.Write("Vänligen välj ett alternativ genom att skriva in siffran för det val du önskar och tryck på Enter: ");
 
                 // Lagra input
                 string? input = Console.ReadLine();
-                Console.WriteLine();
 
                 // Hantera ? och om det är mer eller mindre än 5
-                if (int.TryParse(input, out choice) && choice <= 5 && choice >= 1)
+                if (int.TryParse(input, out choice) && choice <= 4 && choice >= 1)
                 {
                     break; // Bryt loopen så du kan gå t switchen
                 }
 
                 Console.WriteLine("Vänligen välj en siffra från menyn 1 - 4.");
+               
             }
 
             // Hantera kundens önskemål i submenyn beroende på vad hen vlt genom submeny
@@ -50,12 +51,10 @@ namespace HotellApp
             {
                 case 1:
                     Console.WriteLine();
-
                     // Ta emot nya kundens namn
                     Console.Write("Ange kundens namn (Ex: Anna Lindborg) : ");
 
                     string? newCustomerName = Console.ReadLine();
-                    Console.WriteLine();
 
                     // Hantera ? och samtidigt kolla om namn redan finns i hotelManager klasens Customers lista och om så fallet be användren byta namn
                     while (string.IsNullOrWhiteSpace(newCustomerName) || hotelManager.Customers.Any(c => c.Name == newCustomerName))
@@ -71,7 +70,6 @@ namespace HotellApp
                     Console.Write("Ange kundens epost (Ex: AnnaLindborg@hotmail.com): ");
 
                     string? newCustomerMail = Console.ReadLine();
-                    Console.WriteLine();
 
                     // Hantera ?
                     while (string.IsNullOrWhiteSpace(newCustomerMail))
@@ -86,7 +84,6 @@ namespace HotellApp
                     Console.Write("Ange kundens telefonnummer (Ex: 0764556227): ");
 
                     string? newCustomerNumber = Console.ReadLine();
-                    Console.WriteLine();
 
                     // Hantera ?
                     while (string.IsNullOrWhiteSpace(newCustomerNumber))
@@ -107,10 +104,11 @@ namespace HotellApp
                     var newCustomer = new Classes.Customer(newCustomerID, newCustomerName, newCustomerMail, newCustomerNumber);
 
                     // Lägg till kunden i Customers listan i hotelMAnager klassen genom att använda AddCustomer metoden som finns i HotelMAnager klassen
+                    Console.WriteLine(); // Design
                     hotelManager.AddCustomer(newCustomer);
 
                     //Skriv meddelande till användaren om att kunden lagts till
-                    Console.WriteLine($"Ny kund {newCustomerName} har lagts till. ");
+                    //AddCustomer metoden har redan ett sådant meddelande
                     break;
 
 
@@ -134,9 +132,9 @@ namespace HotellApp
 
                     // Ge alternativ på det som användaren kan ändra hos kunden
                     Console.WriteLine();
-                    Console.WriteLine("1. Kundnamn (Ex: Ali Chuba) ");
-                    Console.WriteLine("2. Kundmail (Ex: Ali@hotmail.com) ");
-                    Console.WriteLine("3. Kundnummer (Ex: 0764556227) ");
+                    Console.WriteLine("1. Ändra Kundnamn (Ex: Ali Chuba) ");
+                    Console.WriteLine("2. Ändra Kundmail (Ex: Ali@hotmail.com) ");
+                    Console.WriteLine("3. Ändra Kundnummer (Ex: 0764556227) ");
                     Console.WriteLine();
                     Console.WriteLine();
                     Console.Write("Vänligen välj ett alternativ genom att skriva in siffran för det val du önskar och tryck på Enter: ");

@@ -31,6 +31,8 @@ namespace HotellApp.Classes
         {
             return (start < EndDate && end > StartDate);
         }
+
+        // ShowBokingsmetoden skrev inte ut ordentligt utan denna metod utan skrev istället på datorspråk som exempelvis Hotelmanager.Booking.Name
     }
 
 }

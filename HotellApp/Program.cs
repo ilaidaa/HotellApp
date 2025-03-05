@@ -24,11 +24,13 @@ namespace HotellApp
                 // Inte bestämd för har ej frågat användaren än, men ska ändra denna till d användaren vill när jag knvrterar.
                 int choice;
 
+                
                 // Säkerställ att användaren skriver in en giltig siffra från menyn med en loop
                 while (true)
                 {
-                    // Fråga om inpput
+                   // Fråga om inpput
                     Console.Write("Vänligen välj ett alternativ genom att skriva in siffran för det val du önskar och tryck på Enter: ");
+
 
                     // Ta emot input
                     string? input = Console.ReadLine(); // string? = variabeln kan vara null, och det är mitt ansvar att hantera vilket jag gör i konverteringen (annars använd IsNullOrWhiteSpace)
@@ -39,7 +41,8 @@ namespace HotellApp
                     }
 
                     Console.WriteLine("Vänligen välj en siffra från menyn 1 - 5.");
-                    
+                    Console.WriteLine();
+
                 }
 
 
@@ -69,8 +72,6 @@ namespace HotellApp
                             break;
 
                         case 5:
-                            Console.WriteLine("Programmet avslutas . . .");
-                            Thread.Sleep(1000);
                             runProgram = false;
                         break;
 
@@ -134,6 +135,7 @@ namespace HotellApp
             while (true)
             {
                 // Fråga om inpput
+                Console.WriteLine();
                 Console.Write("Vänligen välj ett alternativ genom att skriva in siffran för det val du önskar och tryck på Enter: ");
 
                 // Lagra input
@@ -167,8 +169,6 @@ namespace HotellApp
                     break;
 
                 case 4:              
-                    Console.WriteLine("Återvänder till huvudmenyn...");
-                    Thread.Sleep(1000);
                     return; // Bryter loopen och återvänder till huvudmenyn
                     //  Behöver ingen default för jag säkerställde i while loopen innan switch satsen att siffran ska vara mellan 1-5
             }
