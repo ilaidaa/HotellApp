@@ -8,7 +8,7 @@ namespace HotellApp.Classes
 {
     // Hotell Manager Klassen
     public class HotelManager
-    {
+    {       
         // Använd alla klasser som du gjorde tidigare Room, Booking och Customer som properies för vad HotelManger ska kunna göra.
         // klasserna Room, Booking och Customer görs om till Lists när jag skapar properiesen till HotelManager för att det ska ju finnas flera av allt dessa.
         public List<Classes.Room> Rooms { get; set; } = new List<Classes.Room>();
