@@ -25,12 +25,7 @@
 
   <ItemGroup>
     <None Update="AppSettings.json">
-      <CopyToOutputDirectory>{
-  "ConnectionStrings": {
-    "DefaultConnection":   "Server=localhost;Database=SchoolDB;Trusted_Connection=True;TrustServerCertificate=true;MultipleActiveResultSets=true"
-  }
-}
-</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
