@@ -3,6 +3,9 @@ using System;
 using System.Runtime.Intrinsics.Arm;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using HotellApp.Methods;
+using HotellApp.Context;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace HotellApp
 {
@@ -10,6 +13,27 @@ namespace HotellApp
     {
         static void Main(string[] args)
         {
+            // DATABAS HÄMTAS
+            // Skapar en Configuration Builder som kan hämta enskilda värden från appsettings.json.
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
+            // Hämtar vår connection string inuti appsettings.json med ConfigurationBuilder objektet
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
+            // Med vår connection string skapar vi en DbContextOption, alltså en inställning för vår databas.
+            var contextOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
+                .UseSqlServer(connectionString)
+                .Options;
+            // Skapar ett objekt av ApplicationDbContext genom att skicka in våra inställningar som innehåller connection stringen.
+            using var dbContext = new ApplicationDbContext(contextOptions);
+
+
+
+
+
+
+            // C# KOD SKRIVS 
             Classes.HotelManager hotelManager = new Classes.HotelManager(); // Ropa metoden från Classes mappen
 
 
