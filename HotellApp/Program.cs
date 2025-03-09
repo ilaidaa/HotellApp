@@ -27,7 +27,8 @@ namespace HotellApp
                 .Options;
             // Skapar ett objekt av ApplicationDbContext genom att skicka in våra inställningar som innehåller connection stringen.
             using var dbContext = new ApplicationDbContext(contextOptions);
-
+            // Denna rad la jag till EFTER att jag gjort en Migration mapp med hjälpp av Add-Migration InitialCreate
+            dbContext.Database.Migrate();
 
 
 
