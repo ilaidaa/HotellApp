@@ -21,6 +21,14 @@ namespace HotellApp.Classes
             Email = email;
             PhoneNumber = phone;
         }
-    }
 
+
+        // DATABAS: Lägg till en parameterlös konstruktor för sist gick det inte att läsa från databasen
+        // men den konstruktor som används för att koden ska köras är såklart den över.
+        public Customer()
+        {
+
+        }
+
+    }
 }

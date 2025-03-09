@@ -51,6 +51,14 @@ namespace HotellApp.Classes
          - Risk för dubbletter → Om du glömmer att öka ID:t själv, kan två bokningar få samma ID.
          */
 
+        // DATABAS: Lägg till en parameterlös konstruktor för sist gick det inte att läsa från databasen
+        // men den konstruktor som används för att koden ska köras är såklart den över.
+        public Booking() 
+        {
+        
+        }
+
+
 
         // Metod: Kontrollera om bokningen överlappar en annan bokning kommer användas i HotelManager klassen
         public bool IsOverlapping(DateTime start, DateTime end) // matar in startdatum och slutdatum på när man ska övernatta
