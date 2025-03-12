@@ -1,4 +1,6 @@
 ﻿using HotellApp.Methods;
+using HotellApp.Context; 
+using Microsoft.EntityFrameworkCore; 
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +13,7 @@ namespace HotellApp
     {
 
         // Metod som ska hantera "Hantera Kunder" alternativet i huvudmenyn Meny
-        public static void ShowCustomerMenu(Classes.HotelManager hotelManager)  // Metoden måste ha public i början så man kan anropa den i Program fliken
+        public static void ShowCustomerMenu(Classes.HotelManager hotelManager, ApplicationDbContext dbContext)  // Metoden måste ha public i början så man kan anropa den i Program fliken
         {
             Console.Clear();
             Console.WriteLine("======================================");
@@ -58,7 +60,7 @@ namespace HotellApp
                     string? newCustomerName = Console.ReadLine();
 
                     // Hantera ? och samtidigt kolla om namn redan finns i hotelManager klasens Customers lista och om så fallet be användren byta namn
-                    while (string.IsNullOrWhiteSpace(newCustomerName) || hotelManager.Customers.Any(c => c.Name == newCustomerName))
+                    while (string.IsNullOrWhiteSpace(newCustomerName) || dbContext.Customers.Any(c => c.Name == newCustomerName))
                     {
                         Console.WriteLine();
                         Console.Write("Du skrev ett ogiltigt namn / Kunden är redan registrerad. Vänligen skriv in en ny kund / giltigt namn (Ex: Anna Lindborg): ");
@@ -69,9 +71,7 @@ namespace HotellApp
 
                     // Ta emot nya kundens epost             
                     Console.Write("Ange kundens epost (Ex: AnnaLindborg@hotmail.com): ");
-
                     string? newCustomerMail = Console.ReadLine();
-
                     // Hantera ?
                     while (string.IsNullOrWhiteSpace(newCustomerMail))
                     {
@@ -83,9 +83,7 @@ namespace HotellApp
 
                     // Ta emot nya kundens mobil nr             
                     Console.Write("Ange kundens telefonnummer (Ex: 0764556227): ");
-
                     string? newCustomerNumber = Console.ReadLine();
-
                     // Hantera ?
                     while (string.IsNullOrWhiteSpace(newCustomerNumber))
                     {
@@ -95,40 +93,35 @@ namespace HotellApp
                     }
 
 
-                    // Skapa ett ID nummer till den nya kunden
-                    // du skapar ett nytt Id via variabeln nesCustomerID
-                    // du letar i HotelManager klassens Customers lista och
-                    // Count liksom räknar alla kunder som redan finns i listan och + 1 lägger till nästa lediga plats
-                    int newCustomerID = hotelManager.Customers.Count + 1;
 
                     // Skapa självaste nya kunden
-                    var newCustomer = new Classes.Customer(newCustomerID, newCustomerName, newCustomerMail, newCustomerNumber);
-
+                    var newCustomer = new Classes.Customer(0, newCustomerName, newCustomerMail, newCustomerNumber);
+                    // DB ändring!
+                    dbContext.Customers.Add(newCustomer);
+                    dbContext.SaveChanges();
                     // Lägg till kunden i Customers listan i hotelMAnager klassen genom att använda AddCustomer metoden som finns i HotelMAnager klassen
+                    
                     Console.WriteLine(); // Design
-                    hotelManager.AddCustomer(newCustomer);
+                    Console.WriteLine($"Kunden {newCustomerName} har lagts till.");
 
-                    //Skriv meddelande till användaren om att kunden lagts till
-                    //AddCustomer metoden har redan ett sådant meddelande
                     break;
 
 
                 case 2:
                     Console.Write("Vänligen ange kundnamnet för den kund du vill ändra uppgifter på (Ex: Ali Chuba): ");
-
                     string? customerToEditName = Console.ReadLine();
 
+                    var customersToEdit = dbContext.Customers.FirstOrDefault(c => c.Name == customerToEditName); // DB: hämta från DB
+
                     // Hantera ? och kolla om kunden ens finns i Cutomer listan i hotelmanager klassen
-                    while (string.IsNullOrWhiteSpace(customerToEditName) || !hotelManager.Customers.Any(c => c.Name == customerToEditName))
+                    while (string.IsNullOrWhiteSpace(customerToEditName) || customersToEdit == null) // Eftersom att vi använde FirstOFDefault måste vi hantera null
                     {
                         Console.WriteLine();
                         Console.Write("Ogiltigt namn / Kunden existerar inte. Vänligen skriv in ett giltigt namn eller en kund som existerar (Ex: Ali Chuba): ");
                         customerToEditName = Console.ReadLine();
-                    }
 
-                    // Hämta det faktiska Customer-objektet
-                    // för customerToEditName är bara namnet i STRING som användaren vill ändra
-                    var customerToEdit = hotelManager.Customers.First(c => c.Name == customerToEditName); // First hittar första matchande värde
+                        customersToEdit = dbContext.Customers.FirstOrDefault(c => c.Name == customerToEditName); // DB: uppdatera sökning
+                    }
 
 
                     // Ge alternativ på det som användaren kan ändra hos kunden
@@ -159,12 +152,11 @@ namespace HotellApp
                     {
                         case 1:
                             Console.WriteLine();
-                            Console.Write($"Nuvarande kundnamn är {customerToEdit.Name}. Skriv in det namn du vill ändra till: ");
-
+                            Console.Write($"Nuvarande kundnamn är {customersToEdit.Name}. Skriv in det namn du vill ändra till: ");
                             string? changedCustomerName = Console.ReadLine();
 
                             // Hantera ? och att namnet som väljs inte finns i hotelManagers Customer lista
-                            while (string.IsNullOrWhiteSpace(changedCustomerName) || hotelManager.Customers.Any(n => n.Name == changedCustomerName))
+                            while (string.IsNullOrWhiteSpace(changedCustomerName) || dbContext.Customers.Any(n => n.Name == changedCustomerName))
                             {
                                 Console.WriteLine();
                                 Console.Write("Vänligen skriv in ett giltigt namn eller ett namn som inte redan finns i listan (Ex: Maja Karlsson): ");
@@ -172,7 +164,7 @@ namespace HotellApp
                             }
 
                             // Spara nya namnet
-                            customerToEdit.Name = changedCustomerName;
+                            customersToEdit.Name = changedCustomerName;
 
                             // Meddela användaren om ändringen i kundens namn
                             Console.WriteLine($"Kundens namn har uppdaterats till {changedCustomerName}.");
@@ -181,8 +173,7 @@ namespace HotellApp
 
                         case 2:
                             Console.WriteLine();
-                            Console.Write($"Nuvarande kundmail är {customerToEdit.Email}. Skriv in det namn du vill ändra till: ");
-
+                            Console.Write($"Nuvarande kundmail är {customersToEdit.Email}. Skriv in det namn du vill ändra till: ");
                             string? changedCustomerEmail = Console.ReadLine();
 
                             // Hantera ? men i denna case jämfört med första, behöver du inte se till att mejlen finns i Custoemrs listan för du har redan checkat namnet
@@ -194,7 +185,7 @@ namespace HotellApp
                             }
 
                             // Spara nya email adressen
-                            customerToEdit.Email = changedCustomerEmail;
+                            customersToEdit.Email = changedCustomerEmail;
 
                             // Meddela användaren om ändringen i kundens namn
                             Console.WriteLine($"Kundens email har uppdateras till {changedCustomerEmail}");
@@ -203,8 +194,7 @@ namespace HotellApp
 
                         case 3:
                             Console.WriteLine();
-                            Console.Write($"Nuvarande kundnummer är {customerToEdit.PhoneNumber}. Skriv in det nummer du vill ändra till: ");
-
+                            Console.Write($"Nuvarande kundnummer är {customersToEdit.PhoneNumber}. Skriv in det nummer du vill ändra till: ");
                             string? changedCustomerPhoneNumber = Console.ReadLine();
 
                             while (string.IsNullOrWhiteSpace(changedCustomerPhoneNumber))
@@ -215,10 +205,14 @@ namespace HotellApp
                             }
 
                             // Spara nya kundnumret 
-                            customerToEdit.PhoneNumber = changedCustomerPhoneNumber;
+                            customersToEdit.PhoneNumber = changedCustomerPhoneNumber;
 
                             // Meddela användaren
                             Console.WriteLine($"Kundens telefonnummer har uppdateras till {changedCustomerPhoneNumber}");
+
+                            // DB: Spara ändringarna
+                            dbContext.Customers.Update(customersToEdit);
+                            dbContext.SaveChanges();
                             break;
                     }
                     break;
@@ -227,23 +221,23 @@ namespace HotellApp
 
                 case 3:
                     Console.Write("Vänligen ange kundnamnet för den kund du vill ta bort på (Ex: Karin Björk): ");
-
                     // Ta emot input
                     string? customerBeingDeleted = Console.ReadLine();
 
                     // Hantera ? och kolla om namnet användaren vill tabort finns i hotelManager klassens Customers lista
-                    while (string.IsNullOrWhiteSpace(customerBeingDeleted.ToLower()) || !hotelManager.Customers.Any(c => c.Name == customerBeingDeleted)) // ToLower för att göra alla bokstäver småa ifall användarn skiver såhär --> kAriN
+                    while (string.IsNullOrWhiteSpace(customerBeingDeleted.ToLower()) || !dbContext.Customers.Any(c => c.Name == customerBeingDeleted)) // ToLower för att göra alla bokstäver småa ifall användarn skiver såhär --> kAriN
                     {
                         Console.WriteLine();
                         Console.Write("Vänligen skriv in ett giltigt namn eller ett kundnamn som finns registrerat: ");
                         customerBeingDeleted = Console.ReadLine();
                     }
 
-                    // Skapa en Customer objekt av stringen customerBeingDeleted för att vi ska kunna tabort den från listan, nu är d ju bara en string
-                    var customerDeleted = hotelManager.Customers.Find(c => c.Name == customerBeingDeleted);
+                   // DB
+                    var customerDeleted = dbContext.Customers.First(c => c.Name == customerBeingDeleted);
 
                     // Tabort personen nu från CustomersListan
-                    hotelManager.Customers.Remove(customerDeleted);
+                    dbContext.Customers.Remove(customerDeleted);
+                    dbContext.SaveChanges();
 
                     // Meddela kunden om ändringen
                     Console.WriteLine($"Kunden {customerBeingDeleted} har tagits bort.");

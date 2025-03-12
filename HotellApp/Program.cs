@@ -35,7 +35,7 @@ namespace HotellApp
 
 
             // C# KOD SKRIVS 
-            Classes.HotelManager hotelManager = new Classes.HotelManager(); // Ropa metoden från Classes mappen
+            Classes.HotelManager hotelManager = new Classes.HotelManager(dbContext); // Ropa metoden från Classes mappen
 
 
             // Bool för att köra programmet tills användaren stoppar
@@ -78,22 +78,22 @@ namespace HotellApp
                     {
                         case 1:
                         // Visa Submeny 1
-                        ShowRoomMenuMethod.ShowRoomMenu(hotelManager);
+                        ShowRoomMenuMethod.ShowRoomMenu(hotelManager, dbContext);
                             break;
 
                         case 2:
                             // Visa Submeny 2
-                            ShowCustomerMenuMethod.ShowCustomerMenu(hotelManager);
+                            ShowCustomerMenuMethod.ShowCustomerMenu(hotelManager, dbContext);
                             break;
 
                         case 3:
                             // Visa submeny 3
-                            ShowBookingMenuMethod.ShowBookingMenu(hotelManager);
+                            ShowBookingMenuMethod.ShowBookingMenu(hotelManager, dbContext);
                             break;
 
                         case 4:
                             // Visa submeny 4
-                            AvailabilityMenuMethod.AvailabilityMenu(hotelManager);
+                            AvailabilityMenuMethod.AvailabilityMenu(hotelManager, dbContext);
                             break;
 
                         case 5:

@@ -59,8 +59,16 @@ namespace HotellApp.Classes
         }
 
 
+        // Metod: Kontrollera om bokningen överlappar en annan bokning
+        public bool IsOverlapping(DateTime start, DateTime end)
+        {
+            // Returnerar true om bokningarna överlappar, annars false
+            return (start < EndDate && end > StartDate);
+        }
 
-        
+
+
+
     }
 
 }

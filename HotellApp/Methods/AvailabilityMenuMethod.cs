@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HotellApp.Context;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,7 @@ namespace HotellApp.Methods
     internal class AvailabilityMenuMethod
     {
         // Tillgänglighets Meny
-        public static void AvailabilityMenu(Classes.HotelManager hotelManager)
+        public static void AvailabilityMenu(Classes.HotelManager hotelManager, ApplicationDbContext dbContext)
         {
             Console.Clear();
             Console.WriteLine("======================================");

@@ -1,15 +1,20 @@
-﻿using System;
+﻿using HotellApp.Classes;
+using HotellApp.Context;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace HotellApp.Methods
 {
     internal class ShowBookingMenuMethod
     {
         // Metod som ska hantera "Hantera Bokningar" alternativet i huvudmenyn Meny
-        public static void ShowBookingMenu(Classes.HotelManager hotelManager) // public före static så att man kan anropa metoden i Program
+        // DB ändring: Skicka in din databas koppling också
+        public static void ShowBookingMenu(Classes.HotelManager hotelManager, ApplicationDbContext dbContext) // public före static så att man kan anropa metoden i Program
         {
             Console.Clear();
             Console.WriteLine("======================================");
@@ -52,9 +57,13 @@ namespace HotellApp.Methods
                     // Visa befintliga kunder för att göra det tydligt för användaren att kunna välja Kund ID
                     Console.WriteLine();
                     Console.WriteLine("Befintliga Kunder:");
-                    foreach (var customer in hotelManager.Customers)
+
+                    // DB uppdatering
+                    var customers = dbContext.Customers.ToList();
+                    // DB: ändring, loopar från DB och inte Classes.HotelManager
+                    foreach (var c in customers) 
                     {
-                        Console.WriteLine($"- Kund ID: {customer.CustomerId},  Namn: {customer.Name}, Email: {customer.Email}, Tel: {customer.PhoneNumber})");
+                        Console.WriteLine($"- Kund ID: {c.CustomerId},  Namn: {c.Name}, Email: {c.Email}, Tel: {c.PhoneNumber})");
                     }
 
                     // Ta emot ID från personen som ska göra en bookning
@@ -68,7 +77,7 @@ namespace HotellApp.Methods
                     int customerId;
 
                     // Hantera vad som gänder om inputCustomerID inte lyckas konverteras eller om Kund Id inte hittas
-                    while (!int.TryParse(inputCustomerId, out customerId) || !hotelManager.Customers.Any(c => c.CustomerId == customerId))
+                    while (!int.TryParse(inputCustomerId, out customerId) || !customers.Any(c => c.CustomerId == customerId))
                     {
                         Console.WriteLine();
                         Console.Write("Fel: Ange ett giltigt kund-ID: ");
@@ -83,7 +92,11 @@ namespace HotellApp.Methods
                     // Visa befintliga rum för att göra det tydligt för användaren att kunna välja rum ID
                     Console.WriteLine();
                     Console.WriteLine("Befintliga Rum: ");
-                    foreach (var room in hotelManager.Rooms)
+
+                    //DB ändring!
+                    var rooms = dbContext.Rooms.ToList();
+                    // DB ändring i foreach loopen ändra hotelMAanger.Rooms till rooms bara så du kopplar till dbContet
+                    foreach (var room in rooms)
                     {
                         Console.WriteLine($"-Rum ID: {room.RoomId}, Namn: Rum {room.RoomName}, Typ: {room.RoomType}, Extrasängar: {room.ExtraBeds})");
                     }
@@ -99,7 +112,7 @@ namespace HotellApp.Methods
                     int roomId;
 
                     // Hantera vad som händer om inputRoomID inte lyckas konverteras eller om rum Id inte hittas
-                    while (!int.TryParse(inputRoomId, out roomId) || !hotelManager.Rooms.Any(r => r.RoomId == roomId))
+                    while (!int.TryParse(inputRoomId, out roomId) || !rooms.Any(r => r.RoomId == roomId))
                     {
                         Console.WriteLine();
                         Console.Write("Fel: Ange ett giltigt rums-ID: ");
@@ -156,6 +169,26 @@ namespace HotellApp.Methods
                     // Nu anropar vi MakeBooking metoden med de insamlade uppgifterna
                     Console.WriteLine(); // design
                     hotelManager.MakeBooking(customerId, roomId, startDate, nights);
+
+
+
+
+
+                    // DB uppdatering:
+                    // DB: Lägg även till och spara bokningen i DB
+                    var customer = dbContext.Customers.First(c => c.CustomerId == customerId); // Letar upp rätt kund i databasen som har samma CustomerId som användaren valt. Sparas i variabeln customer.
+                    var roomToBook = dbContext.Rooms.First(r => r.RoomId == roomId);
+
+                    var newBooking = new Classes.Booking(startDate, startDate.AddDays(nights), customer, roomToBook);
+
+                    // Lägg till och spara nya bokning i DB
+                    dbContext.Bookings.Add(newBooking);
+                    dbContext.SaveChanges();
+
+                    // Uppdatera och Spara ändringar i DB
+                    roomToBook.IsAvailable = false; //roomToBook var dbContext variabeln du deklarerade några rader upp.
+                    dbContext.Rooms.Update(roomToBook);
+                    dbContext.SaveChanges(); // DB: Uppdatera rummet till upptaget
                     break;
 
 
@@ -167,8 +200,11 @@ namespace HotellApp.Methods
                     // Ta emot nput
                     string? nameOfBooker = Console.ReadLine();
 
+                    // För DB
+                    var customerForBooking = dbContext.Customers.ToList(); // DB: hämta från DB
+
                     // Hantera ? och kolla om namnet ens finns "om strängen är null eller bokar INTE finns i listan)
-                    while (string.IsNullOrWhiteSpace(nameOfBooker) || !hotelManager.Customers.Any(c => c.Name == nameOfBooker))
+                    while (string.IsNullOrWhiteSpace(nameOfBooker) || !customerForBooking.Any(c => c.Name == nameOfBooker))
                     {
                         Console.WriteLine();
                         Console.Write("Vänligen skriv in ett giltigt namn / en kund som existerar: ");
@@ -177,17 +213,15 @@ namespace HotellApp.Methods
 
                     // Hitta kunden och HÄMTA kunden baserat på namnet, First hämtar ju en kund, Any kollar bara om det finns en matchande element
                     // Du behöver inte använda FirstOrDefault för du dubbelkollade i while loopen att namnet fanns i listan med hjälp av Any redan.
-                    Classes.Customer customerBooking = hotelManager.Customers.First(c => c.Name == nameOfBooker);
+                    var customerBooking = customerForBooking.First(c => c.Name == nameOfBooker);
+                    // koppla customerBookings till din DB
+                    var customerBookings = dbContext.Bookings
+                        .Include(b => b.BookedRoom) // .Include(b => b.BookedRoom) Hämtar info om vilket rum som är kopplat till bokningen, inte bara RoomId.
+                                                    // (Annars hade du fått problem om du vill skriva ut tex. "Rum 101").
+                        .Where(b => b.CustomerId == customerBooking.CustomerId) //  Filtrerar så att du bara får bokningar för den kund du jobbar med just nu.
+                                                                                //  (Alltså alla bokningar som är kopplade till den personens ID).
+                        .ToList(); // Gör om resultatet till en lista som du kan loopa igenom och använda direkt.
 
-                    // Hitta bokningar som kunden har gjort och gör det till en lista med hjälp av ToList()
-                    // Eftersom ToList() används i slutet, blir customerBookings av typen List<Booking>.
-                    // hotelManager är en instans av klassen HotelManager, som innehåller listan Bookings. hotelManager.Bookings är alltså en lista(List<Booking>) med alla bokningar på hotellet.
-                    // .Where() filtrerar en lista eller samling baserat på ett villkor. Den returnerar bara de objekt som uppfyller villkoret.
-                    // Utan .ToList() → .Where() returnerar en IEnumerable (en uppsättning data som kan loopas igenom).
-                    // Med.ToList() → Konverterar resultatet till en lista(List<T>), vilket gör det enklare att hantera.
-                    // Varför inte First() här? jo för att Where() Returnerar alla objekt som matchar villkoret. Används när du förväntar dig flera träffar. 
-                    // Men first returnerar bara första objektet som matchar villkoret
-                    var customerBookings = hotelManager.Bookings.Where(c => c.Customer == customerBooking).ToList();
 
                     // Om kunden inte har bokningar, avbryt
                     if (!customerBookings.Any())
@@ -202,7 +236,7 @@ namespace HotellApp.Methods
 
                     for (int i = 0; i < customerBookings.Count; i++) // Count är där för att den räknar och det är en lista.
                     {
-                        Classes.Booking booking = customerBookings[i]; // Skapar ett objekt av Booking klassen och lägger varje nu customerBookings i den
+                        var booking = customerBookings[i]; // Skapar ett objekt av Booking klassen i DB och lägger varje nu customerBookings i den
                         Console.WriteLine($"{i + 1}. Rum: {booking.BookedRoom.RoomName}, Från: {booking.StartDate.ToShortDateString()} Till: {booking.EndDate.ToShortDateString()}");
                         // i + 1 = så den räknar från 1. vi börjar ju loopen från 0
                         // ToShortDateString behövs ej men blir skitfult utan
@@ -229,7 +263,7 @@ namespace HotellApp.Methods
                     // Hämta den valda bokningen
                     // -1 används eftersom listor börjar på index 0, men användare tänker i "1, 2, 3...".
                     // Denna rad hämtar en specifik bokning från listan customerBookings, baserat på användarens val.
-                    Classes.Booking selectedBooking = customerBookings[chosenBooking - 1];
+                    var selectedBooking = customerBookings[chosenBooking - 1];
 
                     // Låt användaren byta datum på sin bokning
                     // Du kan använda choosenInput för den kommer ju aldrig vara fel. Den måste vara giltg så att man kan hoppa ner till nästa kod från while-loopen
@@ -269,22 +303,21 @@ namespace HotellApp.Methods
                     // Bookings är en lista (List<Booking>) som finns i Room-klassen. Den innehåller alla bokningar som har gjorts för detta specifika rum.
                     // b != selectedBooking betyder "ignorera den bokning vi just nu ändrar".
                     // IsOverlapping() är en metod vi definierade i Booking-klassen. Den kollar om bokningen b överlappar den nya perioden(newStartDate - newEndDate).
-                    bool isOverlapping = selectedBooking.BookedRoom.Bookings.Any(b => b != selectedBooking && b.IsOverlapping(newStartDate, newEndDate));
-
-                    // den kod som finns inom {} bara körs om isOverlapping är true.
+                   
+                    bool isOverlapping = dbContext.Bookings.Any(b => b.RoomId == selectedBooking.RoomId && b.BookingId != selectedBooking.BookingId && b.IsOverlapping(newStartDate, newEndDate));
                     if (isOverlapping)
                     {
                         Console.WriteLine("Det valda datumet krockar med en annan bokning för detta rum.");
                     }
                     else
                     {
-                        // Uppdatera bokningen med nya datum
                         selectedBooking.StartDate = newStartDate;
                         selectedBooking.EndDate = newEndDate;
-
-                        Console.WriteLine();
+                        dbContext.Bookings.Update(selectedBooking);
+                        dbContext.SaveChanges(); // DB: Spara ändringen!
                         Console.WriteLine($"Bokningen har uppdaterats! Nytt datum: {newStartDate.ToShortDateString()} - {newEndDate.ToShortDateString()}.");
                     }
+                    
                     break;
 
 

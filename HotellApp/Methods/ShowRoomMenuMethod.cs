@@ -1,4 +1,6 @@
-﻿using System;
+﻿using HotellApp.Context;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +11,7 @@ namespace HotellApp.Methods
     public class ShowRoomMenuMethod
     {
         // Metod som ska hantera "Hantera Rum" alternativet i huvudmenyn Meny
-        public static void ShowRoomMenu(Classes.HotelManager hotelManager) // Ta in hotelManager metoden i ShowRoomMetoden så att den ska funka
+        public static void ShowRoomMenu(Classes.HotelManager hotelManager, ApplicationDbContext dbContext) // Ta in hotelManager metoden i ShowRoomMetoden så att den ska funka
         {
             Console.Clear();
             Console.WriteLine("======================================");
@@ -53,7 +55,6 @@ namespace HotellApp.Methods
                     Console.WriteLine("2. Välj dubbelrum liten (60 kvm)");
                     Console.WriteLine("3. Välj dubbelrum stor (100 kvm)");
                     Console.WriteLine();
-
                     // Spara input, ? = "Jag löser null sj"
                     string? inputRoom = Console.ReadLine();
 
@@ -108,20 +109,20 @@ namespace HotellApp.Methods
 
 
                     Console.WriteLine();
-                    // Uppdatera allt som har med HotelMAnager att göra
+                    Console.Write("Ange ett namn för rummet (Ex: Rum 105): "); // ÄNDRAT: Användaren skriver namnet
+                    string? roomName = Console.ReadLine();
 
-                    // Skapa en ny id genom att ta hotelManagers Rooms LISTA och går igenom listan och räknar med hjälp av Count
-                    // Count är en property som tillhör List<T> i C# Den räknar hur många element(rum) som finns i listan.
-                    int newId = hotelManager.Rooms.Count + 1; // + 1 Skapar nytt ID i ordning för vi har ju 4 seed
+                    // Validera input för rumsnamn
+                    while (string.IsNullOrWhiteSpace(roomName) || dbContext.Rooms.Any(r => r.RoomName == roomName)) // ÄNDRAT: Kolla så det inte finns
+                    {
+                        Console.WriteLine("Rumsnamnet är ogiltigt eller finns redan, ange ett annat namn: ");
+                        roomName = Console.ReadLine();
+                    }
 
-                    // Skapar en ny string rumsnamn. Rums namnet beror på ID så om ID är 5 ska rumsnamn vara 105. Lättare att komma ihåg.
-                    string roomName = $"{100 + newId}"; // Skapar rumsnamn t.ex. "Rum 101"
-
-                    // Skapar ett nytt rums objekt av klassen Rooms med nya id och alla andra element som vi bestämt ovan
-                    Classes.Room newRoom = new Classes.Room(newId, roomName, roomType, extraBeds);
-
-                    // Ropar på HotelManager klassens metod AddRoom som ska lägga till i listan.
-                    hotelManager.AddRoom(newRoom);
+                    // Skapa ett nytt rum (RoomId skapas automatiskt av databasen) 
+                    Classes.Room newRoom = new Classes.Room(0, roomName, roomType, extraBeds); // ÄNDRAT: 0 som ID, databasen sätter ID själv
+                    dbContext.Rooms.Add(newRoom); // Lägg till i DB
+                    dbContext.SaveChanges(); // Spara till DB
 
                     // Ge meddelande till user om att bokningen är klar
                     Console.WriteLine($"Rum {roomName} Bokat! Du har skapat {roomType} med {extraBeds} extrasäng(ar).");
@@ -147,7 +148,7 @@ namespace HotellApp.Methods
 
 
                     // Kolla om rummet ens finns i hotelManager.Rooms
-                    var roomToEdit = hotelManager.Rooms.Find(r => r.RoomName == input); // var är en room objekt från Room klassen
+                    var roomToEdit = dbContext.Rooms.FirstOrDefault(r => r.RoomName == input); // var är en room objekt från Room klassen
 
                     // Hanter om find inte hittar rummet
                     if (roomToEdit != null)
@@ -203,20 +204,17 @@ namespace HotellApp.Methods
                             }
 
                             // Kolla om rumsnamnet redan är upptaget om så fallet låt användaren ge nya namn tills han lyckas
-                            while (hotelManager.Rooms.Any(r => r.RoomName == newRoomName))
+                            while (dbContext.Rooms.Any(r => r.RoomName == newRoomName))
                             {
                                 Console.WriteLine();
                                 Console.Write($"Det finns redan ett rum som heter {newRoomName}. Vänligen välj ett nytt nummer: ");
                                 newRoomName = Console.ReadLine(); // Låt användaren skriva in ett nytt namn
                             }
 
-                            // Den letar igenom listan av rum i hotelManager.Rooms och hittar det första rummet där rumsnamnet är detsamma som roomToEdit´s roomName.
-                            var rooom = hotelManager.Rooms.First(r => r.RoomName == roomToEdit.RoomName); // First :  returnerar det första elementet som uppfyller ett givet villkor (här, att rumsnamnet matchar).
-                                                                                                          // Det används när man förväntar sig att hitta minst ett matchande objekt och vill ha just det första som hittas.
-
-                            // Uppdatera rumsnamnet i room objektet till newRoomName
-                            rooom.RoomName = newRoomName;
-
+                            roomToEdit.RoomName = newRoomName;
+                            dbContext.Rooms.Update(roomToEdit);
+                            dbContext.SaveChanges(); // Spara ändringen
+                          
                             // Meddela användaren om bytet
                             Console.WriteLine();
                             Console.WriteLine($"Rumsnumret ändrades till {newRoomName}");
@@ -239,6 +237,9 @@ namespace HotellApp.Methods
 
                             // Uppdatera roomToEdits RoomType till användarens nya önskemål som är newRoomType
                             roomToEdit.RoomType = newRoomType;
+
+                            dbContext.Rooms.Update(roomToEdit);
+                            dbContext.SaveChanges(); // Spara ändringen
 
                             // Meddela användaren
                             Console.WriteLine();
@@ -266,6 +267,10 @@ namespace HotellApp.Methods
                             // Updatera roomToEdits ExtraBeds property med den nya newExtraBeds
                             roomToEdit.ExtraBeds = newExtraBeds;
 
+                            // DB
+                            dbContext.Rooms.Update(roomToEdit);
+                            dbContext.SaveChanges(); // Spara ändringen
+
                             // Meddela användaren om detta
                             Console.WriteLine();
                             Console.WriteLine($"Antalet extrasängar har uppdaterats till {newExtraBeds}.");
@@ -289,17 +294,18 @@ namespace HotellApp.Methods
                     }
 
                     // Kolla om rumsnamnet ens finns om inte ge användaren nya chanser tills han lyckas
-                    while (!hotelManager.Rooms.Any(r => r.RoomName == roomGettingDeleted))
+                    while (!dbContext.Rooms.Any(r => r.RoomName == roomGettingDeleted))
                     {
                         Console.WriteLine("Rummet du vill ta bort kunde inte hittas. Vänligen skriv in ett giltigt rumsnamn: ");
                         roomGettingDeleted = Console.ReadLine();
                     }
 
                     // Döp rummet (till room) som hittades och som användaren sökte så att du kan i nästa steg deleta
-                    var room = hotelManager.Rooms.Find(r => r.RoomName == roomGettingDeleted); // First :  returnerar det första elementet som uppfyller ett givet villkor (här, att rumsnamnet matchar).
-                                                                                               // Det används när man förväntar sig att hitta minst ett matchande objekt och vill ha just det första som hittas.
-                                                                                               // Ta bort rummet
-                    hotelManager.Rooms.Remove(room);
+                    var room = dbContext.Rooms.FirstOrDefault(r => r.RoomName == roomGettingDeleted); 
+
+                    // DB
+                    dbContext.Rooms.Remove(room); // Ta bort från DB
+                    dbContext.SaveChanges(); // Spara ändring
 
                     // Meddela användaren
                     Console.WriteLine($"Rum {roomGettingDeleted} har tagits bort. ");
