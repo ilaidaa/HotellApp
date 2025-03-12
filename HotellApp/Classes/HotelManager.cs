@@ -1,62 +1,100 @@
-﻿using System;
+﻿using HotellApp.Context;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
+using System.Runtime.Intrinsics.Arm;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using static Azure.Core.HttpHeader;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace HotellApp.Classes
 {
     // Hotell Manager Klassen
     public class HotelManager
-    {       
-        // Använd alla klasser som du gjorde tidigare Room, Booking och Customer som properies för vad HotelManger ska kunna göra.
-        // klasserna Room, Booking och Customer görs om till Lists när jag skapar properiesen till HotelManager för att det ska ju finnas flera av allt dessa.
-        public List<Classes.Room> Rooms { get; set; } = new List<Classes.Room>();
-        public List<Classes.Customer> Customers { get; set; } = new List<Classes.Customer>();
-        public List<Classes.Booking> Bookings { get; set; } = new List<Classes.Booking>();
+    {
+        // applicationDbContext är som en datatyp som int eller string men i detta fall är det en datatyp som kopplar till databasen
+        // int = datatyp för heltal
+        // string = datatyp för text
+        // ApplicationDbContext = din egen "special-datatyp" för att prata med databasen.
+        // du har skapat en plats/minne för att kunna lagra ett ApplicationDbContext-objekt senare. Men du har inte gett den något värde än.
+        // Du har bara deklarerat en variabel(en "plats" för databas-kopplingen), men inte skapat själva kopplingen än.
+        private ApplicationDbContext _dbContext;
 
-        // Konstruktorn refererar till metoden (SedData) som genererar exempel rum och exempel kunder.
-        public HotelManager()
+
+        // Konstruktorn som tar in dbContext
+        // detta är en konstruktor som tar emot min speciella variabel (som kopplar koden till databas) och i konstruktorn så omvandlas dbContext variabeln till _DbContext variabel 
+        public HotelManager(ApplicationDbContext dbContext)
         {
-            SeedData(); // Metoden SeedData() läggs i konstruktorn för att automatiskt fylla listorna Rooms och Customers med exempeldata varje gång ett objekt av HotelManager skapas.
-                        // Det innebär att så fort en ny instans av HotelManager skapas, så kommer den direkt att ha några rum och kunder tillgängliga,
-                        // Slipper anropa metoden manuellt varje gång jag skapar ett nytt HotelManager-objekt.
+            _dbContext = dbContext; // JAg skapar inte en NY variabel i konstruktorn. Jag tilldelar ett värde till -DbContext som jag deklarerat ovanför konstuktorn.
+            SeedDatabase(); // Kör SeedData varje gång systemet startar (men bara om databasen är tom)
         }
 
-        // privat metod (SeedData) för att den kommer bara användas i HotelManager
-        // Metoden innehåller 4 rum och 4 kunder jag har bestämt
-        private void SeedData()
-        {
-            Rooms.Add(new Classes.Room(1, "Rum 101", "Enkelrum", 0));
-            Rooms.Add(new Classes.Room(2, "Rum 102", "Dubbelrum", 1));
-            Rooms.Add(new Classes.Room(3, "Rum 103", "Dubbelrum", 2));
-            Rooms.Add(new Classes.Room(4, "Rum 104", "Enkelrum", 0));
 
-            Customers.Add(new Classes.Customer(1, "Alice Karlsson", "alice@hotmail.com", "070-123 45 67"));
-            Customers.Add(new Classes.Customer(2, "Erik Andersson", "erik@hotmail.com", "070-765 43 21"));
-            Customers.Add(new Classes.Customer(3, "Maria Svensson", "maria@hotmail.com", "070-987 65 43"));
-            Customers.Add(new Classes.Customer(4, "Johan Larsson", "johan@hotmail.com", "070-654 32 10"));
+        // Det är en metod för att automatiskt fylla databasen med exempeldata
+        // SeedData (exempel personer och rum) men SeedData till databasen inte till min kod
+        private void SeedDatabase()
+        {
+                _dbContext.Rooms.AddRange // AddRange() används för att lägga till FLERA entiteter samtidigt i databasen. Men Add används bara för att lägga EN
+                (
+                    new Room(1, "Rum 101", "Enkelrum", 0),
+                    new Room(2, "Rum 102", "Dubbelrum", 1),
+                    new Room(3, "Rum 103", "Dubbelrum", 2),
+                    new Room(4, "Rum 104", "Enkelrum", 0)
+                );
+            
+
+                _dbContext.Customers.AddRange
+                (
+                    new Customer(1, "Alice Karlsson", "alice@hotmail.com", "070-123 45 67"),
+                    new Customer(2, "Erik Andersson", "erik@hotmail.com", "070-765 43 21"),
+                    new Customer(3, "Maria Svensson", "maria@hotmail.com", "070-987 65 43"),
+                    new Customer(4, "Johan Larsson", "johan@hotmail.com", "070-654 32 10")
+                );
+
+            _dbContext.SaveChanges(); // Spara ändringar till databasen
         }
+
+
+
 
         // Metod: Lägg till nytt rum
         public void AddRoom(Classes.Room room) // Lägger till ett rum från Room klassen för att metoden ska funka
         {
-            Rooms.Add(room); // Rooms är listen som bestämdes i HotelManager klassens properties. room är objekt från klassen Room
+            // Jag bytte ut Room.Add(room) till dessa två rader nedan så att DATABASEN förstår. Alltså en ändring från Lists till Databas
+            _dbContext.Rooms.Add(room);
+            _dbContext.SaveChanges();
+
             Console.WriteLine($"Rum {room.RoomName} har lagts till.");
         }
+
+
 
         // Metod: Lägg till en kund
         public void AddCustomer(Classes.Customer customer) // Lägger till en kund från Room klassen för att metoden ska funka
         {
-            Customers.Add(customer); // Customers är listen som bestämdes i HotelManager klassens properties
+            _dbContext.Customers.Add(customer);
+            _dbContext.SaveChanges();
+            
             Console.WriteLine($"Kund {customer.Name} har lagts till.");
         }
+
 
         // Metod: Visa alla rum
         public void ShowRooms()
         {
+            var rooms = _dbContext.Rooms.ToList(); // DB: La bara till denna rad och ändrade lite i foreach loopens villkor
+                                                   // _dbContext	Din koppling till databasen, där tabellerna bor (ex: Rooms).
+                                                   // _dbContext.Rooms Hämtar alla rader från tabellen Rooms som en "query".
+                                                   // .ToList()   Gör om "queryn" till en färdig lista som du kan jobba med i C#.
+                                                   // var rooms Skapar en lokal lista - variabel(endast i metoden) med alla rum
+
             Console.WriteLine("Lista över alla rum:");
-            foreach (Classes.Room room in Rooms) // Första (gröna) Room är klassen Room som finns längst upp
+            foreach (var room in rooms) // Första (gröna) Room är klassen Room som finns längst upp
                                                  // Andra (blåa) room är ett rum (variabel) som skapats av Room klassen
                                                  // Sista Rooms (vit) är från HotelManagers klassen property
             {
@@ -64,11 +102,15 @@ namespace HotellApp.Classes
             }
         }
 
+
+
         // MEtod: Visa alla kunder
         public void ShowCustomers()
         {
+            var customers = _dbContext.Customers.ToList();
+
             Console.WriteLine("Lista över alla kunder:");
-            foreach (Classes.Customer customer in Customers) // Första (gröna) Customer är klassen Customer som finns längst upp
+            foreach (var customer in customers) // Första (gröna) Customer är klassen Customer som finns längst upp
                                                              // Andra (blåa) customer är en kund (variabel) som skapats av Customer klassen
                                                              // Sista Customers (vit) är från HotelManagers klassen property
             {
@@ -76,18 +118,29 @@ namespace HotellApp.Classes
             }
         }
 
+
+
         // Metod: Visa alla bokningar
         public void ShowBookings()
         {
+            // Include hämtar den kopplade tabellen, så du får riktiga namn istället för ID.
+            // .Include(b => b.Customer) så hämtar du hela kund-objektet från databasen — inte bara ID:t — vilket innebär att du får tillgång till allt som finns i den klassen!
+            var bookings = _dbContext.Bookings
+                 .Include(b => b.Customer)  
+                 .Include(b => b.BookedRoom)
+                 .ToList();
 
             Console.WriteLine("Lista över alla bookningar:");
-            foreach (Classes.Booking booking in Bookings) // Första (gröna) Customer är klassen Customer som finns längst upp
+            foreach (var booking in bookings) // Första (gröna) Customer är klassen Customer som finns längst upp
                                                           // Andra (blåa) customer är en kund (variabel) som skapats av Customer klassen
                                                           // Sista Customers (vit) är från HotelManagers klassen property
             {
                 Console.WriteLine($"- Bokad rum: {booking.BookedRoom.RoomName}, bookare: {booking.Customer.Name}, startdatum: {booking.StartDate.ToShortDateString()}, slutdatum: {booking.EndDate.ToShortDateString()}");
             }
         }
+
+
+
 
         // Metod: Skapa en bokning
         public void MakeBooking(int customerId, int roomId, DateTime startDate, int nights) // Tar emot alla element i parentesen så metoden kan funka
@@ -107,7 +160,7 @@ namespace HotellApp.Classes
 
             // Om felen ovan inte existerar gå ner t följande rader:
             // Vi ska hitta rätt rum och rätt kund med hjälp av FirstOrDefault
-            Classes.Room room = Rooms.FirstOrDefault(r => r.RoomId == roomId); // FirstOrDefault() är en metod som används för att hämta det första elementet i en samling (mitt fall lista) som uppfyller ett visst villkor.
+            var room = _dbContext.Rooms.FirstOrDefault(r => r.RoomId == roomId); // FirstOrDefault() är en metod som används för att hämta det första elementet i en samling (mitt fall lista) som uppfyller ett visst villkor.
                                                                                // Villkoret är den som finns i parentesen bredvid.
                                                                                // r : Variablerna i parentesen är bara påhittade i detta fall r så jag kan koppla till room i huvet
                                                                                // => : är lambda-operatorn, som betyder "går till" eller "returnerar".
@@ -124,7 +177,7 @@ namespace HotellApp.Classes
                                                                                // Den gör det för att jag ska hitta rätt rum att boka
                                                                                // jag vill skapa en bokning för en viss kund i ett visst rum.
                                                                                // För att kunna göra det måste jag hitta det specifika rummet som kunden vill boka.
-            Classes.Customer customer = Customers.FirstOrDefault(c => c.CustomerId == customerId); // Samma som ovan
+           var customer = _dbContext.Customers.FirstOrDefault(c => c.CustomerId == customerId); // Samma som ovan
 
 
             // Om rummet ELLER kunden inte hittas, då meddela user
@@ -142,22 +195,31 @@ namespace HotellApp.Classes
 
 
 
-            // Kolla om rummet är tillgängligt för datumen
-            if (room.Bookings.Any(b => b.IsOverlapping(startDate, endDate))) // .Any inbyggd metod i C#, den kollar om minst ett objekt i en lista uppfyller ett visst villkor.
-                                                                             // IsOverlapping var ju metoden som jag gjorde i Booking klassen mke längre upp
-                                                                             // lambda operator igen. Så den här gånger om b överlappar villkoret efter => så skrivs det ett meddelande t user om att rummet redan är bokat
+
+
+
+            // Kolla om rummet är tillgängligt för datumen genom att först skapa en bool som kollar om databasen har en bokning som
+            // har samma rumsId som den id som matas in i bokningen eller om startdatumet är mindre än sluttadum eller slutdatum större än startdatum
+            bool isBooked = _dbContext.Bookings.Any(b => b.RoomId == roomId && startDate < b.EndDate && endDate > b.StartDate);
+
+            //Om isBooked är sant alltså det finns en bookning
+            if (isBooked)
             {
                 Console.WriteLine("Rummet är redan bokat under denna period.");
                 return;
             }
 
 
-            Classes.Booking newBooking = new Classes.Booking(startDate, endDate, customer, room); // Skapar ett nytt objekt av klassen Booking med alla elemnt som finns i parntesen
-            room.Bookings.Add(newBooking); // Bookings är ju en property i Room Klassen, det är en lista. Så då läggs den nya bokningen i rummets egna Bookings lista
-            Bookings.Add(newBooking); // Vi lägger till den nya bokningen i Bookings listan som är en property i HotelManager klassen (Hela hotellets bokningslista) 
-                                      // Denna och Room klassens egna Bookings lista kan hjälpas åt att spara bokningar.
-                                      // Men Room klassen måste ha en egen så när man söker i just det rummet kan man se om den är bokad och behöver inte kolla igenom hotellets alla bokningar.
-            room.IsAvailable = false; // Isavailable är ju en property i Room klassen, den är vanligtvis alltid på true men nu är den på false för rummet blev precis bokat
+            var booking = new Booking(startDate, endDate, customer, room); // Här skapas ett nytt boknings-objekt av klassen Booking.
+                                                                           // Det får ett startdatum, slutdatum, vilken kund som bokar, och vilket rum som bokas.
+                                                                           // Detta finns bara i minnet just nu, inte i databasen än.
+            _dbContext.Bookings.Add(booking); // "Hej databas, jag vill att du lägger till denna nya bokning nästa gång jag sparar!"
+            _dbContext.SaveChanges(); //  Nu skickas bokningen till databasen och blir permanent!
+
+            room.IsAvailable = false; // rummet nu är upptaget genom att ändra IsAvailable till false.
+            _dbContext.Rooms.Update(room); // "Hej, uppdatera detta rum (som nu är upptaget)."
+            _dbContext.SaveChanges(); // Spara ändringar 
+
 
             // ÄNTLIGEN BEKRÄFTELSE
             Console.WriteLine($"Bokning skapad! {customer.Name} har bokat {room.RoomName} från {startDate.ToShortDateString()} till {endDate.ToShortDateString()}.");

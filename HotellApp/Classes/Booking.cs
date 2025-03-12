@@ -60,13 +60,7 @@ namespace HotellApp.Classes
 
 
 
-        // Metod: Kontrollera om bokningen överlappar en annan bokning kommer användas i HotelManager klassen
-        public bool IsOverlapping(DateTime start, DateTime end) // matar in startdatum och slutdatum på när man ska övernatta
-        {
-            return (start < EndDate && end > StartDate);
-        }
-
-        // ShowBokingsmetoden skrev inte ut ordentligt utan denna metod utan skrev istället på datorspråk som exempelvis Hotelmanager.Booking.Name
+        
     }
 
 }
