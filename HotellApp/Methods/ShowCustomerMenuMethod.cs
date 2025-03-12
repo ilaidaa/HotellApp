@@ -95,7 +95,7 @@ namespace HotellApp
 
 
                     // Skapa självaste nya kunden
-                    var newCustomer = new Classes.Customer(0, newCustomerName, newCustomerMail, newCustomerNumber);
+                    var newCustomer = new Classes.Customer(newCustomerName, newCustomerMail, newCustomerNumber);
                     // DB ändring!
                     dbContext.Customers.Add(newCustomer);
                     dbContext.SaveChanges();

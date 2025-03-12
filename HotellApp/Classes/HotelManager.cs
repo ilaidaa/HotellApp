@@ -41,19 +41,19 @@ namespace HotellApp.Classes
         {
                 _dbContext.Rooms.AddRange // AddRange() används för att lägga till FLERA entiteter samtidigt i databasen. Men Add används bara för att lägga EN
                 (
-                    new Room(1, "Rum 101", "Enkelrum", 0),
-                    new Room(2, "Rum 102", "Dubbelrum", 1),
-                    new Room(3, "Rum 103", "Dubbelrum", 2),
-                    new Room(4, "Rum 104", "Enkelrum", 0)
+                    new Room("Rum 101", "Enkelrum", 0),
+                    new Room("Rum 102", "Dubbelrum", 1),
+                    new Room("Rum 103", "Dubbelrum", 2),
+                    new Room("Rum 104", "Enkelrum", 0)
                 );
             
 
                 _dbContext.Customers.AddRange
                 (
-                    new Customer(1, "Alice Karlsson", "alice@hotmail.com", "070-123 45 67"),
-                    new Customer(2, "Erik Andersson", "erik@hotmail.com", "070-765 43 21"),
-                    new Customer(3, "Maria Svensson", "maria@hotmail.com", "070-987 65 43"),
-                    new Customer(4, "Johan Larsson", "johan@hotmail.com", "070-654 32 10")
+                    new Customer("Alice Karlsson", "alice@hotmail.com", "070-123 45 67"),
+                    new Customer("Erik Andersson", "erik@hotmail.com", "070-765 43 21"),
+                    new Customer("Maria Svensson", "maria@hotmail.com", "070-987 65 43"),
+                    new Customer("Johan Larsson", "johan@hotmail.com", "070-654 32 10")
                 );
 
             _dbContext.SaveChanges(); // Spara ändringar till databasen

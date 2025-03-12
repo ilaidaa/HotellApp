@@ -120,7 +120,7 @@ namespace HotellApp.Methods
                     }
 
                     // Skapa ett nytt rum (RoomId skapas automatiskt av databasen) 
-                    Classes.Room newRoom = new Classes.Room(0, roomName, roomType, extraBeds); // ÄNDRAT: 0 som ID, databasen sätter ID själv
+                    Classes.Room newRoom = new Classes.Room(roomName, roomType, extraBeds); // ÄNDRAT: 0 som ID, databasen sätter ID själv
                     dbContext.Rooms.Add(newRoom); // Lägg till i DB
                     dbContext.SaveChanges(); // Spara till DB
 

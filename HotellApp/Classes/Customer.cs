@@ -14,9 +14,9 @@ namespace HotellApp.Classes
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
 
-        public Customer(int id, string name, string email, string phone)
+        public Customer(string name, string email, string phone)
         {
-            CustomerId = id;
+           
             Name = name;
             Email = email;
             PhoneNumber = phone;

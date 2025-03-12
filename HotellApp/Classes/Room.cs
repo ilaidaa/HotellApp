@@ -24,9 +24,8 @@ namespace HotellApp.Classes
 
 
         // Konstruktor för att skapa ett nytt rum
-        public Room(int id, string roomName, string roomType, int extraBeds)
+        public Room(string roomName, string roomType, int extraBeds)
         {
-            RoomId = id;
             RoomName = roomName;
             RoomType = roomType;
             ExtraBeds = extraBeds;
