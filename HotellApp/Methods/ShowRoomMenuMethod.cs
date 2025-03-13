@@ -93,6 +93,7 @@ namespace HotellApp.Methods
                     int extraBeds = 0;
                     if (maxExtraBeds > 0)
                     {
+                        Console.WriteLine();
                         Console.Write($"Hur många extrasängar vill du lägga till? (0 - {maxExtraBeds}): ");
 
                         // Ta emot input , Säg t programmet att du hanterar null själv genom ?
@@ -109,13 +110,14 @@ namespace HotellApp.Methods
 
 
                     Console.WriteLine();
-                    Console.Write("Ange ett namn för rummet (Ex: Rum 105): "); // ÄNDRAT: Användaren skriver namnet
+                    Console.Write("Ange ett nummer för rummet (Ex: 105): "); // ÄNDRAT: Användaren skriver namnet
                     string? roomName = Console.ReadLine();
 
                     // Validera input för rumsnamn
                     while (string.IsNullOrWhiteSpace(roomName) || dbContext.Rooms.Any(r => r.RoomName == roomName)) // ÄNDRAT: Kolla så det inte finns
                     {
-                        Console.WriteLine("Rumsnamnet är ogiltigt eller finns redan, ange ett annat namn: ");
+                        Console.WriteLine();
+                        Console.Write("Rumsnamnet är ogiltigt eller finns redan, ange ett annat namn: ");
                         roomName = Console.ReadLine();
                     }
 
@@ -125,13 +127,15 @@ namespace HotellApp.Methods
                     dbContext.SaveChanges(); // Spara till DB
 
                     // Ge meddelande till user om att bokningen är klar
+                    Console.WriteLine();
                     Console.WriteLine($"Rum {roomName} Bokat! Du har skapat {roomType} med {extraBeds} extrasäng(ar).");
                     break;
 
 
 
                 case 2:
-                    Console.Write("Vänligen ange rumsnumret för det rum du vill ändra (Ex: 101): ");
+                    Console.WriteLine();
+                    Console.Write("Vänligen ange rumsnamnet för det rum du vill ändra (Ex: 101): ");
 
                     // Ta emot användarens svar i string 
                     string? input = Console.ReadLine();
@@ -142,32 +146,29 @@ namespace HotellApp.Methods
                     while (!int.TryParse(input, out roomNumber)) // Hade jag inte deklarerat roomNumber över while loopen hade jag varit tvungen att lägga "int" framför out
                     {
                         Console.WriteLine();
-                        Console.Write("Vänligen skriv in ett giltigt nummer: ");
+                        Console.Write("Vänligen skriv in ett giltigt rumsnamn: ");
                         input = Console.ReadLine(); // denna rad så användaren kan fortsätta skriva in svar tills han ger ett korrekt svar
                     }
 
-
-                    // Kolla om rummet ens finns i hotelManager.Rooms
+                    // Kolla om rummet ens finns och koppla databasen
                     var roomToEdit = dbContext.Rooms.FirstOrDefault(r => r.RoomName == input); // var är en room objekt från Room klassen
 
-                    // Hanter om find inte hittar rummet
-                    if (roomToEdit != null)
+                    // Loop som körs så länge vi INTE hittar ett rum
+                    while (roomToEdit == null)
                     {
-                        Console.WriteLine();
-                        Console.WriteLine($"Du har valt att ändra {roomToEdit.RoomName}");
+                        Console.Write("Rummet kunde inte hittas. Försök igen: ");
+                        input = Console.ReadLine(); // Ny input från användaren
+                        roomToEdit = dbContext.Rooms.FirstOrDefault(r => r.RoomName == input); // Försök igen
                     }
-                    else
-                    {
-                        Console.WriteLine();
-                        Console.WriteLine("Rummet kunde inte hittas.");
-                    }
+
+                    Console.WriteLine($"Du har valt att ändra rum {roomToEdit.RoomName}");
+
 
                     Console.WriteLine();
                     // Låt användaren välja det som ska ändras i rummet
-                    Console.WriteLine("1. Rumsnummer (Ex: 101)");
+                    Console.WriteLine("1. Rumsnamn (Ex: 101)");
                     Console.WriteLine("2. Rumstyp (Ex: enkelrum/dubbelrum)");
                     Console.WriteLine("3. Extrasängar");
-                    Console.WriteLine();
                     Console.WriteLine();
                     Console.Write("Vänligen välj ett alternativ genom att skriva in siffran för det val du önskar och tryck på Enter: ");
 
@@ -190,7 +191,7 @@ namespace HotellApp.Methods
                     {
                         case 1:
                             Console.WriteLine();
-                            Console.Write($"Ditt nuvarande rumsnummer är: {roomToEdit.RoomName}. Skriv det rumsnummer du vill byta till : ");
+                            Console.Write($"Ditt nuvarande rumsnamn är: {roomToEdit.RoomName}. Skriv det rumsnamn du vill byta till (Ex: 105): ");
 
                             // Ta emot input
                             string? newRoomName = Console.ReadLine();
@@ -221,6 +222,7 @@ namespace HotellApp.Methods
                             break;
 
                         case 2:
+                            Console.WriteLine();
                             Console.Write($"Ditt nuvarande rumstyp är: {roomToEdit.RoomType}. Ange den nya rumstypen (t.ex. enkelrum eller dubbelrum): ");
 
                             // Ta emot input
@@ -228,9 +230,8 @@ namespace HotellApp.Methods
                             Console.WriteLine();
 
                             // Hantera ?, alltås om newRoomType är null lr mellanslag
-                            while (string.IsNullOrWhiteSpace(newRoomType))
+                            while (string.IsNullOrWhiteSpace(newRoomType) || (newRoomType.ToLower() != "enkelrum" && newRoomType.ToLower() != "dubbelrum"))
                             {
-                                Console.WriteLine();
                                 Console.Write("Vänligen ange en giltig rumstyp: ");
                                 newRoomType = Console.ReadLine();
                             }
@@ -242,11 +243,11 @@ namespace HotellApp.Methods
                             dbContext.SaveChanges(); // Spara ändringen
 
                             // Meddela användaren
-                            Console.WriteLine();
                             Console.WriteLine($"Rumstypen har ändrats till {newRoomType}.");
                             break;
 
                         case 3:
+                            Console.WriteLine();
                             Console.Write($"Ditt nuvarande val av extrasängar är: {roomToEdit.ExtraBeds}. Ange det nya antalet extrasängar: ");
 
                             // ta emot input
@@ -259,7 +260,7 @@ namespace HotellApp.Methods
                             // Konvertera och hantera ?
                             while (!int.TryParse(extraBedsinput, out newExtraBeds) || newExtraBeds < 1 || newExtraBeds > 2)
                             {
-                                Console.WriteLine();
+                                
                                 Console.Write("Vänligen ange ett giltigt nummer mellan 1 och 2: ");
                                 extraBedsinput = Console.ReadLine();
                             }
