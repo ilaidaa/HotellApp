@@ -28,7 +28,7 @@ namespace HotellApp.Classes
         // Konstruktorrr
         public Booking(DateTime start, DateTime end, Classes.Customer customer, Classes.Room bookedRoom)
         {
-            BookingId = nextBookingId++; // DATABAS: ökar värdt en gång så nya bokningen får en unik ID
+           
             RoomId = bookedRoom.RoomId; // DATABAS: FK lagras i databasen
             CustomerId = customer.CustomerId; // DATABAS: FK lagras i databasen
 

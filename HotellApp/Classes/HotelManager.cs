@@ -60,10 +60,10 @@ namespace HotellApp.Classes
                 // SEEDA RUM
                 var rooms = new List<Room>
                 {
-                new Room("Rum 101", "Enkelrum", 0),
-                new Room("Rum 102", "Dubbelrum", 1),
-                new Room("Rum 103", "Dubbelrum", 2),
-                new Room("Rum 104", "Enkelrum", 0)
+                new Room("101", "Enkelrum", 0),
+                new Room("102", "Dubbelrum", 1),
+                new Room("103", "Dubbelrum", 2),
+                new Room("104", "Enkelrum", 0)
                  };
                 _dbContext.Rooms.AddRange(rooms);
 

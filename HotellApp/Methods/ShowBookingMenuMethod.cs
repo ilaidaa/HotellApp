@@ -97,7 +97,7 @@ namespace HotellApp.Methods
                     // DB ändring i foreach loopen ändra hotelMAanger.Rooms till rooms bara så du kopplar till dbContet
                     foreach (var room in rooms)
                     {
-                        Console.WriteLine($"-Rum ID: {room.RoomId}, Namn: Rum {room.RoomName}, Typ: {room.RoomType}, Extrasängar: {room.ExtraBeds})");
+                        Console.WriteLine($"-Rum ID: {room.RoomId}, Namn: {room.RoomName}, Typ: {room.RoomType}, Extrasängar: {room.ExtraBeds})");
                     }
 
                     // Ta emot ID från personen som ska göra en bookning
@@ -194,25 +194,25 @@ namespace HotellApp.Methods
                 case 2:
                     // Fråga om vem som ska boka
                     Console.WriteLine();
-                    Console.Write("Vänligen ange namnet på personen för den bokning som du önskar ändra (Ex: Karin Larsson: ");
+                    Console.Write("Vänligen ange namnet på personen för den bokning som du önskar ändra (Ex: Karin Larsson): ");
 
                     // Ta emot nput
-                    string? nameOfBooker = Console.ReadLine();
+                    string? nameOfBooker = Console.ReadLine().ToLower(); ;
 
                     // För DB
                     var customerForBooking = dbContext.Customers.ToList(); // DB: hämta från DB
 
                     // Hantera ? och kolla om namnet ens finns "om strängen är null eller bokar INTE finns i listan)
-                    while (string.IsNullOrWhiteSpace(nameOfBooker) || !customerForBooking.Any(c => c.Name == nameOfBooker))
+                    while (string.IsNullOrWhiteSpace(nameOfBooker) || !customerForBooking.Any(c => c.Name.ToLower() == nameOfBooker))
                     {
                         Console.WriteLine();
                         Console.Write("Vänligen skriv in ett giltigt namn / en kund som existerar: ");
-                        nameOfBooker = Console.ReadLine();
+                        nameOfBooker = Console.ReadLine().ToLower();
                     }
 
                     // Hitta kunden och HÄMTA kunden baserat på namnet, First hämtar ju en kund, Any kollar bara om det finns en matchande element
                     // Du behöver inte använda FirstOrDefault för du dubbelkollade i while loopen att namnet fanns i listan med hjälp av Any redan.
-                    var customerBooking = customerForBooking.First(c => c.Name == nameOfBooker);
+                    var customerBooking = customerForBooking.First(c => c.Name.ToLower() == nameOfBooker);
                     // koppla customerBookings till din DB
                     var customerBookings = dbContext.Bookings
                         .Include(b => b.BookedRoom) // .Include(b => b.BookedRoom) Hämtar info om vilket rum som är kopplat till bokningen, inte bara RoomId.
@@ -225,13 +225,13 @@ namespace HotellApp.Methods
                     // Om kunden inte har bokningar, avbryt
                     if (!customerBookings.Any())
                     {
-                        Console.WriteLine($"Kunden {customerBooking} har inga bokningar att ändra.");
+                        Console.WriteLine($"Kunden {customerBooking.Name} har inga bokningar att ändra.");
                         return;
                     }
 
                     // Visa bokningar och låt användaren välja vilken de vill ändra
                     Console.WriteLine();
-                    Console.WriteLine($"Bokningar för {customerBooking}: ");
+                    Console.WriteLine($"Bokningar för {customerBooking.Name}: ");
 
                     for (int i = 0; i < customerBookings.Count; i++) // Count är där för att den räknar och det är en lista.
                     {
@@ -244,6 +244,7 @@ namespace HotellApp.Methods
                     // Be användaren välja en bokning
                     Console.WriteLine();
                     Console.Write("Ange siffran för den bokning du vill ändra: ");
+                    Console.WriteLine();
 
                     // ta emot användarens input i string
                     string? choosenInput = Console.ReadLine();
