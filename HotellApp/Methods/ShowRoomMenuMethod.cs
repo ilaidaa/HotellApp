@@ -43,6 +43,7 @@ namespace HotellApp.Methods
                 }
 
                 Console.WriteLine("Vänligen välj en siffra från menyn 1 - 4.");
+                Console.WriteLine();
             }
 
             // Hantera kundens önskemål i submenyn beroende på vad hen vlt genom submeny
@@ -182,7 +183,7 @@ namespace HotellApp.Methods
                     while (!int.TryParse(inputString, out userChoice) || userChoice > 4 || userChoice < 1)
                     {
                         Console.WriteLine();
-                        Console.WriteLine("Vänligen ange ett nummer mellan 1 - 3");
+                        Console.Write("Vänligen ange ett nummer mellan 1 - 3: ");
                         inputString = Console.ReadLine();
                     }
 
@@ -243,6 +244,7 @@ namespace HotellApp.Methods
                             dbContext.SaveChanges(); // Spara ändringen
 
                             // Meddela användaren
+                            Console.WriteLine();
                             Console.WriteLine($"Rumstypen har ändrats till {newRoomType}.");
                             break;
 
@@ -282,7 +284,8 @@ namespace HotellApp.Methods
 
 
                 case 3:
-                    Console.Write("Vänligen ange rumsnumret för det rum du vill ta bort (Ex: Rum 101): ");
+                    Console.WriteLine();
+                    Console.Write("Vänligen ange rumsnamnet för det rum du vill ta bort (Ex: 101): ");
 
                     // Ta emot input
                     string? roomGettingDeleted = Console.ReadLine();
@@ -290,14 +293,16 @@ namespace HotellApp.Methods
                     // Hantera ? (null) som du lova i raden ovan
                     while (string.IsNullOrWhiteSpace(roomGettingDeleted))
                     {
-                        Console.WriteLine("Vänligen skriv in ett giltigt nummer (Ex: Rum 101): ");
+                        Console.WriteLine();
+                        Console.Write("Vänligen skriv in ett giltigt namn (Ex: 101): ");
                         roomGettingDeleted = Console.ReadLine();
                     }
 
                     // Kolla om rumsnamnet ens finns om inte ge användaren nya chanser tills han lyckas
                     while (!dbContext.Rooms.Any(r => r.RoomName == roomGettingDeleted))
                     {
-                        Console.WriteLine("Rummet du vill ta bort kunde inte hittas. Vänligen skriv in ett giltigt rumsnamn: ");
+                        Console.WriteLine();
+                        Console.Write("Rummet du vill ta bort kunde inte hittas. Vänligen skriv in ett giltigt rumsnamn: ");
                         roomGettingDeleted = Console.ReadLine();
                     }
 
@@ -309,6 +314,7 @@ namespace HotellApp.Methods
                     dbContext.SaveChanges(); // Spara ändring
 
                     // Meddela användaren
+                    Console.WriteLine();
                     Console.WriteLine($"Rum {roomGettingDeleted} har tagits bort. ");
 
                     break;

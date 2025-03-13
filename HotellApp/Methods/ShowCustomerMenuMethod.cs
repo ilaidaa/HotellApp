@@ -69,7 +69,8 @@ namespace HotellApp
 
 
 
-                    // Ta emot nya kundens epost             
+                    // Ta emot nya kundens epost
+                    
                     Console.Write("Ange kundens epost (Ex: AnnaLindborg@hotmail.com): ");
                     string? newCustomerMail = Console.ReadLine();
                     // Hantera ?
@@ -108,6 +109,7 @@ namespace HotellApp
 
 
                 case 2:
+                    Console.WriteLine();
                     Console.Write("Vänligen ange kundnamnet för den kund du vill ändra uppgifter på (Ex: Ali Chuba): ");
                     string? customerToEditName = Console.ReadLine();
 
@@ -130,7 +132,7 @@ namespace HotellApp
                     Console.WriteLine("2. Ändra Kundmail (Ex: Ali@hotmail.com) ");
                     Console.WriteLine("3. Ändra Kundnummer (Ex: 0764556227) ");
                     Console.WriteLine();
-                    Console.WriteLine();
+                 
                     Console.Write("Vänligen välj ett alternativ genom att skriva in siffran för det val du önskar och tryck på Enter: ");
 
                     // Ta emot användarens input men den är i string
@@ -153,7 +155,7 @@ namespace HotellApp
                         case 1:
                             Console.WriteLine();
                             Console.Write($"Nuvarande kundnamn är {customersToEdit.Name}. Skriv in det namn du vill ändra till: ");
-                            string? changedCustomerName = Console.ReadLine();
+                            string? changedCustomerName = Console.ReadLine().ToLower();
 
                             // Hantera ? och att namnet som väljs inte finns i hotelManagers Customer lista
                             while (string.IsNullOrWhiteSpace(changedCustomerName) || dbContext.Customers.Any(n => n.Name == changedCustomerName))
@@ -166,7 +168,11 @@ namespace HotellApp
                             // Spara nya namnet
                             customersToEdit.Name = changedCustomerName;
 
+                            // Spara i DATABAS
+                            dbContext.SaveChanges();
+
                             // Meddela användaren om ändringen i kundens namn
+                            Console.WriteLine();
                             Console.WriteLine($"Kundens namn har uppdaterats till {changedCustomerName}.");
                             break;
 
@@ -187,7 +193,10 @@ namespace HotellApp
                             // Spara nya email adressen
                             customersToEdit.Email = changedCustomerEmail;
 
+                            dbContext.SaveChanges();
+
                             // Meddela användaren om ändringen i kundens namn
+                            Console.WriteLine();
                             Console.WriteLine($"Kundens email har uppdateras till {changedCustomerEmail}");
                             break;
 
@@ -207,7 +216,10 @@ namespace HotellApp
                             // Spara nya kundnumret 
                             customersToEdit.PhoneNumber = changedCustomerPhoneNumber;
 
+                            dbContext.SaveChanges();
+
                             // Meddela användaren
+                            Console.WriteLine();
                             Console.WriteLine($"Kundens telefonnummer har uppdateras till {changedCustomerPhoneNumber}");
 
                             // DB: Spara ändringarna
@@ -220,6 +232,7 @@ namespace HotellApp
 
 
                 case 3:
+                    Console.WriteLine();
                     Console.Write("Vänligen ange kundnamnet för den kund du vill ta bort på (Ex: Karin Björk): ");
                     // Ta emot input
                     string? customerBeingDeleted = Console.ReadLine();
@@ -240,6 +253,7 @@ namespace HotellApp
                     dbContext.SaveChanges();
 
                     // Meddela kunden om ändringen
+                    Console.WriteLine();
                     Console.WriteLine($"Kunden {customerBeingDeleted} har tagits bort.");
                     break;
 

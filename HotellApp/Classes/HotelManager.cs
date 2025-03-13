@@ -11,6 +11,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static Azure.Core.HttpHeader;
 using static System.Net.Mime.MediaTypeNames;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace HotellApp.Classes
 {
@@ -39,24 +40,36 @@ namespace HotellApp.Classes
         // SeedData (exempel personer och rum) men SeedData till databasen inte till min kod
         private void SeedDatabase()
         {
-                _dbContext.Rooms.AddRange // AddRange() används för att lägga till FLERA entiteter samtidigt i databasen. Men Add används bara för att lägga EN
-                (
-                    new Room("Rum 101", "Enkelrum", 0),
-                    new Room("Rum 102", "Dubbelrum", 1),
-                    new Room("Rum 103", "Dubbelrum", 2),
-                    new Room("Rum 104", "Enkelrum", 0)
-                );
-            
+            // Kolla om det redan finns data i databasen (om det finns, gör inget)
+            // Kontrollerar om tabellerna är tomma.
+            // Om tomma → lägger till startdata(seed).
+            // Om det redan finns data → gör INGENTING, så du slipper dubbla.
+            // Kolla om det redan finns data i databasen (om det finns, gör inget)
+            if (!_dbContext.Customers.Any() && !_dbContext.Rooms.Any())
+            {
+                // SEEDA KUNDER
+                var customers = new List<Customer>
+                {
+                 new Customer("Alice Karlsson", "alice@hotmail.com", "070-123 45 67"),
+                 new Customer("Erik Andersson", "erik@hotmail.com", "070-765 43 21"),
+                 new Customer("Maria Svensson", "maria@hotmail.com", "070-987 65 43"),
+                 new Customer("Johan Larsson", "johan@hotmail.com", "070-654 32 10")
+                 };
+                _dbContext.Customers.AddRange(customers);
 
-                _dbContext.Customers.AddRange
-                (
-                    new Customer("Alice Karlsson", "alice@hotmail.com", "070-123 45 67"),
-                    new Customer("Erik Andersson", "erik@hotmail.com", "070-765 43 21"),
-                    new Customer("Maria Svensson", "maria@hotmail.com", "070-987 65 43"),
-                    new Customer("Johan Larsson", "johan@hotmail.com", "070-654 32 10")
-                );
+                // SEEDA RUM
+                var rooms = new List<Room>
+                {
+                new Room("Rum 101", "Enkelrum", 0),
+                new Room("Rum 102", "Dubbelrum", 1),
+                new Room("Rum 103", "Dubbelrum", 2),
+                new Room("Rum 104", "Enkelrum", 0)
+                 };
+                _dbContext.Rooms.AddRange(rooms);
 
-            _dbContext.SaveChanges(); // Spara ändringar till databasen
+                // SPARA TILL DATABAS
+                _dbContext.SaveChanges();
+            }
         }
 
 

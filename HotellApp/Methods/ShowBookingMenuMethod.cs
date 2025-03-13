@@ -70,6 +70,8 @@ namespace HotellApp.Methods
                     Console.WriteLine();
                     Console.Write("Vänligen ange kund ID på personen du vill göra en ny bokning för: ");
 
+                  
+
                     // Ta emot kund id 
                     string? inputCustomerId = Console.ReadLine();
 
@@ -83,9 +85,6 @@ namespace HotellApp.Methods
                         Console.Write("Fel: Ange ett giltigt kund-ID: ");
                         inputCustomerId = Console.ReadLine(); // Låt användaren försöka tills hen får rätt.
                     }
-
-
-
 
 
 
