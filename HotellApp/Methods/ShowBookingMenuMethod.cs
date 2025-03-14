@@ -173,21 +173,6 @@ namespace HotellApp.Methods
 
 
 
-                    // DB uppdatering:
-                    // DB: Lägg även till och spara bokningen i DB
-                    var customer = dbContext.Customers.First(c => c.CustomerId == customerId); // Letar upp rätt kund i databasen som har samma CustomerId som användaren valt. Sparas i variabeln customer.
-                    var roomToBook = dbContext.Rooms.First(r => r.RoomId == roomId);
-
-                    var newBooking = new Classes.Booking(startDate, startDate.AddDays(nights), customer, roomToBook);
-
-                    // Lägg till och spara nya bokning i DB
-                    dbContext.Bookings.Add(newBooking);
-                    dbContext.SaveChanges();
-
-                    // Uppdatera och Spara ändringar i DB
-                    roomToBook.IsAvailable = false; //roomToBook var dbContext variabeln du deklarerade några rader upp.
-                    dbContext.Rooms.Update(roomToBook);
-                    dbContext.SaveChanges(); // DB: Uppdatera rummet till upptaget
 
                     break;
 

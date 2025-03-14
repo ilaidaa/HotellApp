@@ -222,21 +222,42 @@ namespace HotellApp.Classes
                 return;
             }
 
+            /*
+                        var booking = new Booking(startDate, endDate, customer, room); // Här skapas ett nytt boknings-objekt av klassen Booking.
+                                                                                       // Det får ett startdatum, slutdatum, vilken kund som bokar, och vilket rum som bokas.
+                                                                                       // Detta finns bara i minnet just nu, inte i databasen än.
+                        _dbContext.Bookings.Add(booking); // "Hej databas, jag vill att du lägger till denna nya bokning nästa gång jag sparar!"
+                        _dbContext.SaveChanges(); //  Nu skickas bokningen till databasen och blir permanent!
 
-            var booking = new Booking(startDate, endDate, customer, room); // Här skapas ett nytt boknings-objekt av klassen Booking.
-                                                                           // Det får ett startdatum, slutdatum, vilken kund som bokar, och vilket rum som bokas.
-                                                                           // Detta finns bara i minnet just nu, inte i databasen än.
-            _dbContext.Bookings.Add(booking); // "Hej databas, jag vill att du lägger till denna nya bokning nästa gång jag sparar!"
-            _dbContext.SaveChanges(); //  Nu skickas bokningen till databasen och blir permanent!
-
-            room.IsAvailable = false; // rummet nu är upptaget genom att ändra IsAvailable till false.
-            _dbContext.Rooms.Update(room); // "Hej, uppdatera detta rum (som nu är upptaget)."
-            _dbContext.SaveChanges(); // Spara ändringar 
+                        room.IsAvailable = false; // rummet nu är upptaget genom att ändra IsAvailable till false.
+                        _dbContext.Rooms.Update(room); // "Hej, uppdatera detta rum (som nu är upptaget)."
+                        _dbContext.SaveChanges(); // Spara ändringar 
 
 
-            // ÄNTLIGEN BEKRÄFTELSE
+                        // ÄNTLIGEN BEKRÄFTELSE
+                        Console.WriteLine($"Bokning skapad! {customer.Name} har bokat {room.RoomName} från {startDate.ToShortDateString()} till {endDate.ToShortDateString()}.");
+                        // Det går att tabort ToShortDateString() men då blir datumet jättefullt med tid.
+            */
+
+            // Här är den viktigaste biten! Använd bara ID:n, EF Core fixar kopplingarna via FK (Foreign Keys) om inte du skriver såhär får du 2 kopior av samma bokning
+            var booking = new Booking
+            {
+                StartDate = startDate,
+                EndDate = endDate,
+                CustomerId = customerId,  // FK - ID, inte objekt
+                RoomId = roomId          // FK - ID, inte objekt
+            };
+
+            _dbContext.Bookings.Add(booking);
+            _dbContext.SaveChanges(); // Sparar allt!
+
+            // Markera rummet som upptaget
+            room.IsAvailable = false;
+            _dbContext.Rooms.Update(room);
+            _dbContext.SaveChanges();
+
+            // Bekräftelse till användaren
             Console.WriteLine($"Bokning skapad! {customer.Name} har bokat {room.RoomName} från {startDate.ToShortDateString()} till {endDate.ToShortDateString()}.");
-            // Det går att tabort ToShortDateString() men då blir datumet jättefullt med tid.
 
         }
     
