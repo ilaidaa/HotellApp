@@ -21,7 +21,8 @@ namespace HotellApp.Methods
             Console.WriteLine("|\t                             |");
             Console.WriteLine("|\t1. Skapa ny bokning          |");
             Console.WriteLine("|\t2. Ändra bokning             |");
-            Console.WriteLine("|\t3. Återvänd till Huvudmeny   |");
+            Console.WriteLine("|\t3. Ta bort bokning           |");
+            Console.WriteLine("|\t4. Återvänd till Huvudmeny   |");
             Console.WriteLine("|\t                             |");
             Console.WriteLine("======================================");
 
@@ -40,12 +41,12 @@ namespace HotellApp.Methods
                 string? input = Console.ReadLine();
 
                 // Hantera ? och om det är mer eller mindre än 5
-                if (int.TryParse(input, out choice) && choice <= 3 && choice >= 1)
+                if (int.TryParse(input, out choice) && choice <= 4 && choice >= 1)
                 {
                     break; // Bryt loopen så du kan gå t switchen
                 }
 
-                Console.WriteLine("Vänligen välj en siffra från menyn 1 - 3.");
+                Console.WriteLine("Vänligen välj en siffra från menyn 1 - 4.");
             }
 
             // Hantera kundens önskemål i submenyn beroende på vad hen vlt genom submeny
@@ -95,9 +96,9 @@ namespace HotellApp.Methods
                     //DB ändring!
                     var rooms = dbContext.Rooms.ToList();
                     // DB ändring i foreach loopen ändra hotelMAanger.Rooms till rooms bara så du kopplar till dbContet
-                    foreach (var room in rooms)
+                    foreach (var rooom in rooms)
                     {
-                        Console.WriteLine($"-Rum ID: {room.RoomId}, Namn: {room.RoomName}, Typ: {room.RoomType}, Extrasängar: {room.ExtraBeds})");
+                        Console.WriteLine($"-Rum ID: {rooom.RoomId}, Namn: {rooom.RoomName}, Typ: {rooom.RoomType}, Extrasängar: {rooom.ExtraBeds})");
                     }
 
                     // Ta emot ID från personen som ska göra en bookning
@@ -172,7 +173,6 @@ namespace HotellApp.Methods
 
 
 
-
                     // DB uppdatering:
                     // DB: Lägg även till och spara bokningen i DB
                     var customer = dbContext.Customers.First(c => c.CustomerId == customerId); // Letar upp rätt kund i databasen som har samma CustomerId som användaren valt. Sparas i variabeln customer.
@@ -188,6 +188,7 @@ namespace HotellApp.Methods
                     roomToBook.IsAvailable = false; //roomToBook var dbContext variabeln du deklarerade några rader upp.
                     dbContext.Rooms.Update(roomToBook);
                     dbContext.SaveChanges(); // DB: Uppdatera rummet till upptaget
+
                     break;
 
 
@@ -244,7 +245,7 @@ namespace HotellApp.Methods
                     // Be användaren välja en bokning
                     Console.WriteLine();
                     Console.Write("Ange siffran för den bokning du vill ändra: ");
-                    Console.WriteLine();
+                    
 
                     // ta emot användarens input i string
                     string? choosenInput = Console.ReadLine();
@@ -265,6 +266,7 @@ namespace HotellApp.Methods
                     // Denna rad hämtar en specifik bokning från listan customerBookings, baserat på användarens val.
                     var selectedBooking = customerBookings[chosenBooking - 1];
 
+                    Console.WriteLine();
                     // Låt användaren byta datum på sin bokning
                     // Du kan använda choosenInput för den kommer ju aldrig vara fel. Den måste vara giltg så att man kan hoppa ner till nästa kod från while-loopen
                     Console.Write($"Du har valt att ändra datum för bokningen {choosenInput}. Ange nytt startdatum (YYYY-MM-DD): ");
@@ -303,8 +305,25 @@ namespace HotellApp.Methods
                     // Bookings är en lista (List<Booking>) som finns i Room-klassen. Den innehåller alla bokningar som har gjorts för detta specifika rum.
                     // b != selectedBooking betyder "ignorera den bokning vi just nu ändrar".
                     // IsOverlapping() är en metod vi definierade i Booking-klassen. Den kollar om bokningen b överlappar den nya perioden(newStartDate - newEndDate).
-                   
+
+
+
+
+                    /* egentligen skulle endast detta stycke användas men eftersom att EF är lite efterbliven kunde den inte översätta min IsOverlapping metod i booking så nu måste jag HÄMTA allt från databasen ÅSEN kolla igenom
                     bool isOverlapping = dbContext.Bookings.Any(b => b.RoomId == selectedBooking.RoomId && b.BookingId != selectedBooking.BookingId && b.IsOverlapping(newStartDate, newEndDate));
+                    */
+
+                    // Så nu måste jag göra allt detta nedan istället :)
+                    // 1. Hämta alla andra bokningar för detta rum (inte den vi försöker ändra)
+                    var existingBookings = dbContext.Bookings
+                        .Where(b => b.RoomId == selectedBooking.RoomId && b.BookingId != selectedBooking.BookingId)
+                        .ToList(); // HÄMTA FRÅN DB FÖRST
+
+                    // 2. Kör IsOverlapping i C# (som funkar när datan är i minnet)
+                    bool isOverlapping = existingBookings.Any(b => b.IsOverlapping(newStartDate, newEndDate));
+
+
+
                     if (isOverlapping)
                     {
                         Console.WriteLine("Det valda datumet krockar med en annan bokning för detta rum.");
@@ -315,6 +334,8 @@ namespace HotellApp.Methods
                         selectedBooking.EndDate = newEndDate;
                         dbContext.Bookings.Update(selectedBooking);
                         dbContext.SaveChanges(); // DB: Spara ändringen!
+
+                        Console.WriteLine();
                         Console.WriteLine($"Bokningen har uppdaterats! Nytt datum: {newStartDate.ToShortDateString()} - {newEndDate.ToShortDateString()}.");
                     }
                     
@@ -322,6 +343,55 @@ namespace HotellApp.Methods
 
 
                 case 3:
+                    Console.WriteLine();
+                    hotelManager.ShowBookings();
+
+                    Console.WriteLine();
+                    Console.Write("Vänligen ange rumsnamn för den bookning du vill ta bort (Ex: 101): ");
+
+
+                    // Ta emot input
+                    string? bookingGettingDeleted = Console.ReadLine();
+
+                    // Hantera ? (null) som du lova i raden ovan
+                    while (string.IsNullOrWhiteSpace(bookingGettingDeleted))
+                    {
+                        Console.WriteLine();
+                        Console.Write("Vänligen skriv in ett giltigt namn (Ex: 101): ");
+                        bookingGettingDeleted = Console.ReadLine();
+                    }
+
+                    // Kolla om rumsnamnet ens finns om inte ge användaren nya chanser tills han lyckas
+                    while (!dbContext.Rooms.Any(r => r.RoomName == bookingGettingDeleted))
+                    {
+                        Console.WriteLine();
+                        Console.Write("Bookningen du vill ta bort kunde inte hittas. Vänligen skriv in ett giltigt rumsnamn: ");
+                        bookingGettingDeleted = Console.ReadLine();
+                    }
+
+                    // Hitta en bokning som är kopplad till detta rum
+                    var bookingToDelete = dbContext.Bookings
+                        .Include(b => b.BookedRoom)  // Include hämtar allt som är kopplat till ett objekt. i detta fall inte bara själva bookningen utan namned också
+                        .FirstOrDefault(b => b.BookedRoom.RoomName == bookingGettingDeleted); // Leta bokning där rumsnamnet stämmer
+
+                    // Kontrollera om bokning hittades
+                    if (bookingToDelete == null)
+                    {
+                        Console.WriteLine("Det finns ingen bokning.");
+                        return;
+                    }
+
+                    // Ta bort bokningen
+                    dbContext.Bookings.Remove(bookingToDelete);
+                    dbContext.SaveChanges(); // Spara ändringen!
+
+                    Console.WriteLine($"Bokningen {bookingGettingDeleted} har tagits bort.");
+
+                    break;
+
+
+
+                case 4:
                     ReturnToMainMenuMethod.ReturnToMainMenu();
                     break;
 

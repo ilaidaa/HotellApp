@@ -284,6 +284,7 @@ namespace HotellApp.Methods
 
 
                 case 3:
+
                     Console.WriteLine();
                     Console.Write("Vänligen ange rumsnamnet för det rum du vill ta bort (Ex: 101): ");
 
