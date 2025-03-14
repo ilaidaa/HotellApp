@@ -342,12 +342,12 @@ namespace HotellApp.Methods
                     while (string.IsNullOrWhiteSpace(bookingGettingDeleted))
                     {
                         Console.WriteLine();
-                        Console.Write("Vänligen skriv in ett giltigt namn (Ex: 101): ");
-                        bookingGettingDeleted = Console.ReadLine();
+                        Console.Write("Vänligen skriv in ett giltigt namn (Ex: Rum 101): ");
+                        bookingGettingDeleted = Console.ReadLine().ToLower();
                     }
 
                     // Kolla om rumsnamnet ens finns om inte ge användaren nya chanser tills han lyckas
-                    while (!dbContext.Rooms.Any(r => r.RoomName == bookingGettingDeleted))
+                    while (!dbContext.Rooms.Any(r => r.RoomName.ToLower() == bookingGettingDeleted))
                     {
                         Console.WriteLine();
                         Console.Write("Bookningen du vill ta bort kunde inte hittas. Vänligen skriv in ett giltigt rumsnamn: ");
@@ -355,22 +355,52 @@ namespace HotellApp.Methods
                     }
 
                     // Hitta en bokning som är kopplad till detta rum
-                    var bookingToDelete = dbContext.Bookings
-                        .Include(b => b.BookedRoom)  // Include hämtar allt som är kopplat till ett objekt. i detta fall inte bara själva bookningen utan namned också
-                        .FirstOrDefault(b => b.BookedRoom.RoomName == bookingGettingDeleted); // Leta bokning där rumsnamnet stämmer
+                    // Hämta alla bokningar för det rummet
+                    var bookingsForRoom = dbContext.Bookings
+                        .Include(b => b.BookedRoom)
+                        .Include(b => b.Customer) 
+                        .Where(b => b.BookedRoom.RoomName == bookingGettingDeleted)
+                        .ToList();
 
-                    // Kontrollera om bokning hittades
-                    if (bookingToDelete == null)
+                    // Om inga bokningar hittas, avbryt
+                    if (!bookingsForRoom.Any())
                     {
-                        Console.WriteLine("Det finns ingen bokning.");
+                        Console.WriteLine("Det finns inga bokningar för detta rum.");
                         return;
                     }
 
-                    // Ta bort bokningen
-                    dbContext.Bookings.Remove(bookingToDelete);
+                    // Lista bokningar med siffror
+                    Console.WriteLine();
+                    Console.WriteLine($"Bokningar för {bookingGettingDeleted}:");
+                    for (int i = 0; i < bookingsForRoom.Count; i++)
+                    {
+                        var b = bookingsForRoom[i];
+                        Console.WriteLine($"{i + 1}. Bokare: {b.Customer.Name}, Från: {b.StartDate.ToShortDateString()} Till: {b.EndDate.ToShortDateString()}");
+                    }
+
+                    // Låt användaren välja en bokning att ta bort
+                    Console.WriteLine();
+                    Console.Write("Ange siffran för den bokning du vill ta bort: ");
+                    string? chosenBookingInput = Console.ReadLine();
+                    int chosenBookingNumber;
+
+                    // Validera inmatningen
+                    while (!int.TryParse(chosenBookingInput, out chosenBookingNumber) || chosenBookingNumber < 1 || chosenBookingNumber > bookingsForRoom.Count)
+                    {
+                        Console.WriteLine();
+                        Console.Write("Felaktigt val, ange en giltig siffra: ");
+                        chosenBookingInput = Console.ReadLine();
+                    }
+
+                    // Hämta den valda bokningen
+                    var selectedBookingToDelete = bookingsForRoom[chosenBookingNumber - 1];
+
+                    // Ta bort den valda bokningen
+                    dbContext.Bookings.Remove(selectedBookingToDelete);
                     dbContext.SaveChanges(); // Spara ändringen!
 
-                    Console.WriteLine($"Bokningen {bookingGettingDeleted} har tagits bort.");
+                    Console.WriteLine();
+                    Console.WriteLine($"Bokningen för {bookingGettingDeleted} ({selectedBookingToDelete.StartDate.ToShortDateString()} - {selectedBookingToDelete.EndDate.ToShortDateString()}) har tagits bort.");
 
                     break;
 
